@@ -20,6 +20,10 @@ public record Money(BigDecimal amount) {
         return this.amount.compareTo(money.amount) > 0;
     }
 
+    public boolean isNegative() {
+        return this.amount.compareTo(BigDecimal.ZERO) < 0;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Money other)) return false;

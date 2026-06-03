@@ -8,14 +8,24 @@ import java.util.Objects;
 public class BankAccount implements Account {
     private final AccountId accountId;
     private Money balance;
+    private OverdraftAuthorization overdraftAuthorization;
 
     public static BankAccount create(AccountId accountId) {
-        return new BankAccount(accountId, Money.of(BigDecimal.ZERO));
+        return new BankAccount(accountId, Money.of(BigDecimal.ZERO), OverdraftAuthorization.notAllowed());
     }
 
-    public BankAccount(AccountId accountId, Money balance) {
+    public BankAccount(AccountId accountId, Money balance, OverdraftAuthorization overdraftAuthorization) {
         this.accountId = accountId;
         this.balance = balance;
+        this.overdraftAuthorization = overdraftAuthorization;
+    }
+
+    public void allowOverdraft(OverdraftAuthorization overdraftAuthorization) {
+        this.overdraftAuthorization = overdraftAuthorization;
+    }
+
+    public void denyOverdraft() {
+        this.overdraftAuthorization = OverdraftAuthorization.notAllowed();
     }
 
     @Override
@@ -25,7 +35,7 @@ public class BankAccount implements Account {
 
     @Override
     public void withdraw(Money amount) {
-        if (!isWithdrawAllow(amount)) {
+        if (!isWithdrawAllowed(amount)) {
             throw new InsufficientFundsException(amount, this.accountId, this.balance);
         }
         this.balance = this.balance.subtract(amount);
@@ -52,7 +62,8 @@ public class BankAccount implements Account {
         return Objects.hashCode(accountId);
     }
 
-    private boolean isWithdrawAllow(Money amount) {
-        return !amount.isGreaterThan(this.balance);
+    private boolean isWithdrawAllowed(Money amount) {
+        Money available = this.balance.add(overdraftAuthorization.amount());
+        return !amount.isGreaterThan(available);
     }
 }
