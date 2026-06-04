@@ -4,9 +4,9 @@ import java.util.Objects;
 
 public abstract class Account {
     protected final AccountId accountId;
-    protected Money balance;
+    protected Balance balance;
 
-    protected Account(AccountId accountId, Money balance) {
+    protected Account(AccountId accountId, Balance balance) {
         this.accountId = accountId;
         this.balance = balance;
     }
@@ -15,12 +15,12 @@ public abstract class Account {
         return this.accountId;
     }
 
-    public Money getBalance() {
+    public Balance getBalance() {
         return this.balance;
     }
 
-    public abstract void deposit(Money amount);
-    public abstract void withdraw(Money amount);
+    public abstract void deposit(Amount amount);
+    public abstract void withdraw(Amount amount);
 
     @Override
     public boolean equals(Object o) {
