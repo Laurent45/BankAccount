@@ -59,7 +59,12 @@ public abstract sealed class Account permits BankAccount, SavingsAccount {
         return new Statement(getAccountType(), getAccountId(), now, getBalance(), filtered);
     }
 
-    public abstract AccountType getAccountType();
+    public AccountType getAccountType() {
+        return switch (this) {
+            case BankAccount _ -> AccountType.BANK_ACCOUNT;
+            case SavingsAccount _ -> AccountType.SAVINGS_ACCOUNT;
+        };
+    }
 
     protected abstract void doDeposit(Amount amount);
 
