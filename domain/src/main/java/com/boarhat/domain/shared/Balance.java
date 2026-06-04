@@ -1,4 +1,4 @@
-package com.boarhat.domain.model;
+package com.boarhat.domain.shared;
 
 import java.math.BigDecimal;
 import java.util.Objects;

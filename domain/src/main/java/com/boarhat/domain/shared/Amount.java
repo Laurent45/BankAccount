@@ -1,17 +1,18 @@
-package com.boarhat.domain.model;
+package com.boarhat.domain.shared;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 
 public record Amount(BigDecimal value) {
-    public static Amount of(BigDecimal value) {
-        return new Amount(value);
-    }
 
     public Amount {
         if (value.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("Amount cannot be negative");
         }
+    }
+
+    public static Amount of(BigDecimal value) {
+        return new Amount(value);
     }
 
     @Override

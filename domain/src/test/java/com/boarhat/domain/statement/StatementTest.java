@@ -1,5 +1,15 @@
-package com.boarhat.domain.model;
+package com.boarhat.domain.statement;
 
+import com.boarhat.domain.account.AccountId;
+import com.boarhat.domain.account.AccountType;
+import com.boarhat.domain.account.BankAccount;
+import com.boarhat.domain.account.DepositCeiling;
+import com.boarhat.domain.account.OverdraftAuthorization;
+import com.boarhat.domain.account.SavingsAccount;
+import com.boarhat.domain.operation.Operation;
+import com.boarhat.domain.operation.OperationType;
+import com.boarhat.domain.shared.Amount;
+import com.boarhat.domain.shared.Balance;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 

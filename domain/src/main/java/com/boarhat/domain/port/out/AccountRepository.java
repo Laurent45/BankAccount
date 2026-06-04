@@ -1,7 +1,7 @@
 package com.boarhat.domain.port.out;
 
-import com.boarhat.domain.model.Account;
-import com.boarhat.domain.model.AccountId;
+import com.boarhat.domain.account.Account;
+import com.boarhat.domain.account.AccountId;
 
 import java.util.Optional;
 

@@ -1,6 +1,10 @@
-package com.boarhat.domain.model;
+package com.boarhat.domain.account;
 
 import com.boarhat.domain.exception.InsufficientFundsException;
+import com.boarhat.domain.operation.OperationType;
+import com.boarhat.domain.shared.Amount;
+import com.boarhat.domain.shared.Balance;
+import com.boarhat.domain.statement.Statement;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 

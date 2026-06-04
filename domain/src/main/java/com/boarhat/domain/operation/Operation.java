@@ -1,4 +1,7 @@
-package com.boarhat.domain.model;
+package com.boarhat.domain.operation;
+
+import com.boarhat.domain.shared.Amount;
+import com.boarhat.domain.shared.Balance;
 
 import java.time.LocalDateTime;
 

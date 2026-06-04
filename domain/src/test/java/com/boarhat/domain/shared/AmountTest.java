@@ -1,4 +1,4 @@
-package com.boarhat.domain.model;
+package com.boarhat.domain.shared;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

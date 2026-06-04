@@ -1,4 +1,4 @@
-package com.boarhat.domain.model;
+package com.boarhat.domain.account;
 
 import java.util.UUID;
 

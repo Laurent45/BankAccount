@@ -1,4 +1,4 @@
-package com.boarhat.domain.model;
+package com.boarhat.domain.account;
 
 public enum AccountType {
     BANK_ACCOUNT,

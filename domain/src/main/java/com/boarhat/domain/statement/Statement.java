@@ -1,4 +1,9 @@
-package com.boarhat.domain.model;
+package com.boarhat.domain.statement;
+
+import com.boarhat.domain.account.AccountId;
+import com.boarhat.domain.account.AccountType;
+import com.boarhat.domain.operation.Operation;
+import com.boarhat.domain.shared.Balance;
 
 import java.time.LocalDateTime;
 import java.util.List;
