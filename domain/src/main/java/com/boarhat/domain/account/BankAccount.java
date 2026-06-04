@@ -34,6 +34,11 @@ public final class BankAccount extends Account {
     }
 
     @Override
+    public AccountType getAccountType() {
+        return AccountType.BANK_ACCOUNT;
+    }
+
+    @Override
     protected void doDeposit(Amount amount) {
         this.balance = this.balance.add(amount);
     }

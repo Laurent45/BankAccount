@@ -27,6 +27,11 @@ public final class SavingsAccount extends Account {
     }
 
     @Override
+    public AccountType getAccountType() {
+        return AccountType.SAVINGS_ACCOUNT;
+    }
+
+    @Override
     protected void doDeposit(Amount amount) {
         if (isDepositCeilingReached(amount)) {
             throw new DepositCeilingReachedException(accountId, balance, amount, depositCeiling);
