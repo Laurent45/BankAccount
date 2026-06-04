@@ -3,11 +3,8 @@ package com.boarhat.domain.model;
 import com.boarhat.domain.exception.InsufficientFundsException;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 
-public class BankAccount implements Account {
-    private final AccountId accountId;
-    private Money balance;
+public class BankAccount extends Account {
     private OverdraftAuthorization overdraftAuthorization;
 
     public static BankAccount create(AccountId accountId) {
@@ -15,8 +12,7 @@ public class BankAccount implements Account {
     }
 
     public BankAccount(AccountId accountId, Money balance, OverdraftAuthorization overdraftAuthorization) {
-        this.accountId = accountId;
-        this.balance = balance;
+        super(accountId, balance);
         this.overdraftAuthorization = overdraftAuthorization;
     }
 
@@ -39,27 +35,6 @@ public class BankAccount implements Account {
             throw new InsufficientFundsException(amount, this.accountId, this.balance);
         }
         this.balance = this.balance.subtract(amount);
-    }
-
-    @Override
-    public AccountId getAccountId() {
-        return accountId;
-    }
-
-    @Override
-    public Money getBalance() {
-        return balance;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof BankAccount that)) return false;
-        return Objects.equals(accountId, that.accountId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(accountId);
     }
 
     private boolean isWithdrawAllowed(Money amount) {
