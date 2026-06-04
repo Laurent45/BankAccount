@@ -2,7 +2,7 @@ package com.boarhat.domain.model;
 
 import com.boarhat.domain.exception.InsufficientFundsException;
 
-public class BankAccount extends Account {
+public final class BankAccount extends Account {
     private OverdraftAuthorization overdraftAuthorization;
 
     public static BankAccount create(AccountId accountId) {

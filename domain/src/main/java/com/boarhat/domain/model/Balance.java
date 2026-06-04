@@ -13,6 +13,10 @@ public record Balance(BigDecimal value) {
         return new Balance(value);
     }
 
+    public static Balance of(Amount amount) {
+        return new Balance(amount.value());
+    }
+
     public Balance add(Amount amount) {
         return new Balance(this.value.add(amount.value()));
     }

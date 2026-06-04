@@ -2,7 +2,7 @@ package com.boarhat.domain.model;
 
 import java.util.Objects;
 
-public abstract class Account {
+public abstract sealed class Account permits BankAccount, SavingsAccount {
     protected final AccountId accountId;
     protected Balance balance;
 
