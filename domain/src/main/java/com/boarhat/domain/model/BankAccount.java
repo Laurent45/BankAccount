@@ -21,8 +21,6 @@ public final class BankAccount extends Account {
         this.overdraftAuthorization = overdraftAuthorization;
     }
 
-
-
     public void allowOverdraft(OverdraftAuthorization overdraftAuthorization) {
         this.overdraftAuthorization = overdraftAuthorization;
     }
