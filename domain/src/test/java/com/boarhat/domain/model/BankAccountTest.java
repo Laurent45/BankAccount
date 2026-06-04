@@ -110,4 +110,32 @@ class BankAccountTest {
                 .isInstanceOf(InsufficientFundsException.class);
     }
 
+    @Test
+    void should_allow_withdrawal_exceeding_balance_after_overdraft_is_authorized() {
+        BankAccount bankAccount = new BankAccount(
+                new AccountId(UUID.randomUUID()),
+                Balance.of(new BigDecimal("100")),
+                OverdraftAuthorization.notAllowed()
+        );
+
+        bankAccount.allowOverdraft(OverdraftAuthorization.allowed(Amount.of(new BigDecimal("200"))));
+        bankAccount.withdraw(Amount.of(new BigDecimal("250")));
+
+        assertThat(bankAccount.getBalance()).isEqualTo(Balance.of(new BigDecimal("-150")));
+    }
+
+    @Test
+    void should_throw_after_overdraft_is_denied() {
+        BankAccount bankAccount = new BankAccount(
+                new AccountId(UUID.randomUUID()),
+                Balance.of(new BigDecimal("100")),
+                OverdraftAuthorization.allowed(Amount.of(new BigDecimal("500")))
+        );
+
+        bankAccount.denyOverdraft();
+
+        assertThatThrownBy(() -> bankAccount.withdraw(Amount.of(new BigDecimal("200"))))
+                .isInstanceOf(InsufficientFundsException.class);
+    }
+
 }
