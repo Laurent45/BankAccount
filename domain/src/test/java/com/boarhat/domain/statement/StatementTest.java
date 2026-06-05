@@ -67,7 +67,7 @@ class StatementTest {
 
             List<Operation> operations = List.of(
                     new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("100")), Balance.of(new BigDecimal("100")), twoDaysAgo),
-                    new Operation(OperationType.WITHDRAW, Amount.of(new BigDecimal("50")), Balance.of(new BigDecimal("50")), yesterday),
+                    new Operation(OperationType.WITHDRAWAL, Amount.of(new BigDecimal("50")), Balance.of(new BigDecimal("50")), yesterday),
                     new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("200")), Balance.of(new BigDecimal("250")), oneHourAgo)
             );
 

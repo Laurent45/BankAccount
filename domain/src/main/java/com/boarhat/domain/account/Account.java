@@ -39,7 +39,7 @@ public abstract sealed class Account permits BankAccount, SavingsAccount {
 
     public final void withdraw(Amount amount) {
         doWithdraw(amount);
-        operations.add(new Operation(OperationType.WITHDRAW, amount, this.balance, LocalDateTime.now()));
+        operations.add(new Operation(OperationType.WITHDRAWAL, amount, this.balance, LocalDateTime.now()));
     }
 
     public Statement getStatement() {

@@ -145,7 +145,7 @@ class BankAccountTest {
             Statement statement = account.getStatement();
 
             assertThat(statement.operations()).hasSize(1);
-            assertThat(statement.operations().getFirst().type()).isEqualTo(OperationType.WITHDRAW);
+            assertThat(statement.operations().getFirst().type()).isEqualTo(OperationType.WITHDRAWAL);
             assertThat(statement.operations().getFirst().amount()).isEqualTo(Amount.of(new BigDecimal("50")));
         }
 
