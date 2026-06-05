@@ -12,15 +12,14 @@ public final class BankAccount extends Account {
     private OverdraftAuthorization overdraftAuthorization;
 
     public static BankAccount create(AccountId accountId) {
-        return new BankAccount(accountId, Balance.zero(), OverdraftAuthorization.notAllowed());
+        return new BankAccount(accountId, Balance.zero(), OverdraftAuthorization.notAllowed(), List.of());
     }
 
-    public BankAccount(AccountId accountId, Balance balance, OverdraftAuthorization overdraftAuthorization) {
-        super(accountId, balance);
-        this.overdraftAuthorization = overdraftAuthorization;
+    public static BankAccount reconstruct(AccountId accountId, Balance balance, OverdraftAuthorization overdraftAuthorization, List<Operation> operations) {
+        return new BankAccount(accountId, balance, overdraftAuthorization, operations);
     }
 
-    public BankAccount(AccountId accountId, Balance balance, OverdraftAuthorization overdraftAuthorization, List<Operation> operations) {
+    private BankAccount(AccountId accountId, Balance balance, OverdraftAuthorization overdraftAuthorization, List<Operation> operations) {
         super(accountId, balance, operations);
         this.overdraftAuthorization = overdraftAuthorization;
     }

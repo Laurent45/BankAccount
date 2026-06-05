@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,7 +20,7 @@ class SavingsAccountTest {
     private static final DepositCeiling CEILING = new DepositCeiling(Amount.of(new BigDecimal("1000")));
 
     private SavingsAccount accountWithBalance(String amount) {
-        return new SavingsAccount(ACCOUNT_ID, Balance.of(new BigDecimal(amount)), CEILING);
+        return SavingsAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal(amount)), CEILING, List.of());
     }
 
     @Nested

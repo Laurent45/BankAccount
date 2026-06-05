@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
@@ -19,12 +20,12 @@ class BankAccountTest {
     private static final OverdraftAuthorization NO_OVERDRAFT = OverdraftAuthorization.notAllowed();
 
     private BankAccount accountWithBalance(String amount) {
-        return new BankAccount(ACCOUNT_ID, Balance.of(new BigDecimal(amount)), NO_OVERDRAFT);
+        return BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal(amount)), NO_OVERDRAFT, List.of());
     }
 
     private BankAccount accountWithOverdraft() {
-        return new BankAccount(ACCOUNT_ID, Balance.zero(),
-                OverdraftAuthorization.allowed(Amount.of(new BigDecimal("100"))));
+        return BankAccount.reconstruct(ACCOUNT_ID, Balance.zero(),
+                OverdraftAuthorization.allowed(Amount.of(new BigDecimal("100"))), List.of());
     }
 
     @Nested
@@ -110,8 +111,8 @@ class BankAccountTest {
 
         @Test
         void should_throw_after_overdraft_is_denied() {
-            BankAccount account = new BankAccount(ACCOUNT_ID, Balance.of(new BigDecimal("100")),
-                    OverdraftAuthorization.allowed(Amount.of(new BigDecimal("500"))));
+            BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("100")),
+                    OverdraftAuthorization.allowed(Amount.of(new BigDecimal("500"))), List.of());
 
             account.denyOverdraft();
 
@@ -119,6 +120,7 @@ class BankAccountTest {
                     .isInstanceOf(InsufficientFundsException.class);
         }
     }
+
 
     @Nested
     class OperationRecording {

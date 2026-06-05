@@ -13,15 +13,14 @@ public final class SavingsAccount extends Account {
     private final DepositCeiling depositCeiling;
 
     public static SavingsAccount create(AccountId accountId, DepositCeiling depositCeiling) {
-        return new SavingsAccount(accountId, Balance.zero(), depositCeiling);
+        return new SavingsAccount(accountId, Balance.zero(), depositCeiling, List.of());
     }
 
-    public SavingsAccount(AccountId accountId, Balance balance, DepositCeiling depositCeiling) {
-        super(accountId, balance);
-        this.depositCeiling = depositCeiling;
+    public static SavingsAccount reconstruct(AccountId accountId, Balance balance, DepositCeiling depositCeiling, List<Operation> operations) {
+        return new SavingsAccount(accountId, balance, depositCeiling, operations);
     }
 
-    public SavingsAccount(AccountId accountId, Balance balance, DepositCeiling depositCeiling, List<Operation> operations) {
+    private SavingsAccount(AccountId accountId, Balance balance, DepositCeiling depositCeiling, List<Operation> operations) {
         super(accountId, balance, operations);
         this.depositCeiling = depositCeiling;
     }

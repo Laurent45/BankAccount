@@ -8,7 +8,6 @@ import com.boarhat.domain.statement.Statement;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -18,10 +17,6 @@ public abstract sealed class Account permits BankAccount, SavingsAccount {
     private final List<Operation> operations;
     protected final AccountId accountId;
     protected Balance balance;
-
-    protected Account(AccountId accountId, Balance balance) {
-        this(accountId, balance, Collections.emptyList());
-    }
 
     protected Account(AccountId accountId, Balance balance, List<Operation> operations) {
         this.accountId = accountId;
@@ -60,9 +55,7 @@ public abstract sealed class Account permits BankAccount, SavingsAccount {
     }
 
     public abstract AccountType getAccountType();
-
     protected abstract void doDeposit(Amount amount);
-
     protected abstract void doWithdraw(Amount amount);
 
     @Override

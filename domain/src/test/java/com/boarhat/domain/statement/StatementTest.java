@@ -49,7 +49,7 @@ class StatementTest {
 
         @Test
         void should_return_current_balance_in_statement() {
-            BankAccount account = new BankAccount(ACCOUNT_ID, Balance.of(new BigDecimal("500")), NO_OVERDRAFT);
+            BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("500")), NO_OVERDRAFT, List.of());
             account.deposit(Amount.of(new BigDecimal("200")));
 
             assertThat(account.getStatement().balance()).isEqualTo(Balance.of(new BigDecimal("700")));
@@ -71,7 +71,7 @@ class StatementTest {
                     new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("200")), Balance.of(new BigDecimal("250")), oneHourAgo)
             );
 
-            BankAccount account = new BankAccount(ACCOUNT_ID, Balance.of(new BigDecimal("250")), NO_OVERDRAFT, operations);
+            BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("250")), NO_OVERDRAFT, operations);
 
             Statement statement = account.getStatement();
 
@@ -92,7 +92,7 @@ class StatementTest {
                     new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("200")), Balance.of(new BigDecimal("300")), LocalDateTime.now().minusDays(7))
             );
 
-            BankAccount account = new BankAccount(ACCOUNT_ID, Balance.of(new BigDecimal("300")), NO_OVERDRAFT, operations);
+            BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("300")), NO_OVERDRAFT, operations);
 
             Statement statement = account.getStatement();
 
@@ -106,7 +106,7 @@ class StatementTest {
                     new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("100")), Balance.of(new BigDecimal("100")), LocalDateTime.now().minusMonths(2))
             );
 
-            BankAccount account = new BankAccount(ACCOUNT_ID, Balance.of(new BigDecimal("100")), NO_OVERDRAFT, operations);
+            BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("100")), NO_OVERDRAFT, operations);
 
             assertThat(account.getStatement().operations()).isEmpty();
         }
