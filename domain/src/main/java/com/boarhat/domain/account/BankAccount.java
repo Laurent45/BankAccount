@@ -50,6 +50,10 @@ public final class BankAccount extends Account {
         this.balance = this.balance.subtract(amount);
     }
 
+    public OverdraftAuthorization getOverdraftAuthorization() {
+        return overdraftAuthorization;
+    }
+
     private boolean isWithdrawAllowed(Amount amount) {
         Balance availableBalance = this.balance.add(overdraftAuthorization.limit());
         return !availableBalance.subtract(amount).isNegative();
