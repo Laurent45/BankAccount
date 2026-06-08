@@ -5,6 +5,10 @@ import java.util.Objects;
 
 public record Balance(BigDecimal value) {
 
+    public Balance {
+        Objects.requireNonNull(value, "Balance value must not be null");
+    }
+
     public static Balance zero() {
         return new Balance(BigDecimal.ZERO);
     }
