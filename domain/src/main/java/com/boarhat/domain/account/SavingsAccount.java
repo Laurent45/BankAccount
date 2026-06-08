@@ -40,10 +40,11 @@ public final class SavingsAccount extends Account {
 
     @Override
     protected void doWithdraw(Amount amount) {
-        if (this.balance.subtract(amount).isNegative()) {
+        Balance newBalance = this.balance.subtract(amount);
+        if (newBalance.isNegative()) {
             throw new InsufficientFundsException(amount, this.accountId, this.balance);
         }
-        this.balance = this.balance.subtract(amount);
+        this.balance = newBalance;
     }
 
     public DepositCeiling getDepositCeiling() {
