@@ -25,6 +25,7 @@ class StatementTest {
     private static final AccountId ACCOUNT_ID = new AccountId(UUID.randomUUID());
     private static final OverdraftAuthorization NO_OVERDRAFT = OverdraftAuthorization.notAllowed();
     private static final DepositCeiling CEILING = new DepositCeiling(Amount.of(new BigDecimal("10000")));
+    private static final LocalDateTime NOW = LocalDateTime.of(2026, 6, 8, 12, 0);
 
     @Nested
     class Type {
@@ -33,14 +34,14 @@ class StatementTest {
         void should_return_bank_account_type() {
             BankAccount account = BankAccount.create(ACCOUNT_ID);
 
-            assertThat(account.getStatement().accountType()).isEqualTo(AccountType.BANK_ACCOUNT);
+            assertThat(account.getStatement(NOW).accountType()).isEqualTo(AccountType.BANK_ACCOUNT);
         }
 
         @Test
         void should_return_savings_account_type() {
             SavingsAccount account = SavingsAccount.create(ACCOUNT_ID, CEILING);
 
-            assertThat(account.getStatement().accountType()).isEqualTo(AccountType.SAVINGS_ACCOUNT);
+            assertThat(account.getStatement(NOW).accountType()).isEqualTo(AccountType.SAVINGS_ACCOUNT);
         }
     }
 
@@ -50,9 +51,9 @@ class StatementTest {
         @Test
         void should_return_current_balance_in_statement() {
             BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("500")), NO_OVERDRAFT, List.of());
-            account.deposit(Amount.of(new BigDecimal("200")));
+            account.deposit(Amount.of(new BigDecimal("200")), NOW);
 
-            assertThat(account.getStatement().balance()).isEqualTo(Balance.of(new BigDecimal("700")));
+            assertThat(account.getStatement(NOW).balance()).isEqualTo(Balance.of(new BigDecimal("700")));
         }
     }
 
@@ -61,9 +62,9 @@ class StatementTest {
 
         @Test
         void should_sort_operations_in_reverse_chronological_order() {
-            LocalDateTime twoDaysAgo = LocalDateTime.now().minusDays(2);
-            LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
-            LocalDateTime oneHourAgo = LocalDateTime.now().minusHours(1);
+            LocalDateTime twoDaysAgo = NOW.minusDays(2);
+            LocalDateTime yesterday = NOW.minusDays(1);
+            LocalDateTime oneHourAgo = NOW.minusHours(1);
 
             List<Operation> operations = List.of(
                     new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("100")), Balance.of(new BigDecimal("100")), twoDaysAgo),
@@ -73,7 +74,7 @@ class StatementTest {
 
             BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("250")), NO_OVERDRAFT, operations);
 
-            Statement statement = account.getStatement();
+            Statement statement = account.getStatement(NOW);
 
             assertThat(statement.operations()).hasSize(3);
             assertThat(statement.operations().get(0).occurredAt()).isEqualTo(oneHourAgo);
@@ -88,13 +89,13 @@ class StatementTest {
         @Test
         void should_exclude_operations_older_than_one_month() {
             List<Operation> operations = List.of(
-                    new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("100")), Balance.of(new BigDecimal("100")), LocalDateTime.now().minusMonths(2)),
-                    new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("200")), Balance.of(new BigDecimal("300")), LocalDateTime.now().minusDays(7))
+                    new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("100")), Balance.of(new BigDecimal("100")), NOW.minusMonths(2)),
+                    new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("200")), Balance.of(new BigDecimal("300")), NOW.minusDays(7))
             );
 
             BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("300")), NO_OVERDRAFT, operations);
 
-            Statement statement = account.getStatement();
+            Statement statement = account.getStatement(NOW);
 
             assertThat(statement.operations()).hasSize(1);
             assertThat(statement.operations().getFirst().amount()).isEqualTo(Amount.of(new BigDecimal("200")));
@@ -103,12 +104,34 @@ class StatementTest {
         @Test
         void should_return_empty_when_all_operations_older_than_one_month() {
             List<Operation> operations = List.of(
-                    new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("100")), Balance.of(new BigDecimal("100")), LocalDateTime.now().minusMonths(2))
+                    new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("100")), Balance.of(new BigDecimal("100")), NOW.minusMonths(2))
             );
 
             BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("100")), NO_OVERDRAFT, operations);
 
-            assertThat(account.getStatement().operations()).isEmpty();
+            assertThat(account.getStatement(NOW).operations()).isEmpty();
+        }
+
+        @Test
+        void should_exclude_operation_exactly_one_month_old() {
+            List<Operation> operations = List.of(
+                    new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("100")), Balance.of(new BigDecimal("100")), NOW.minusMonths(1))
+            );
+
+            BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("100")), NO_OVERDRAFT, operations);
+
+            assertThat(account.getStatement(NOW).operations()).isEmpty();
+        }
+
+        @Test
+        void should_include_operation_one_second_within_rolling_month() {
+            List<Operation> operations = List.of(
+                    new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("100")), Balance.of(new BigDecimal("100")), NOW.minusMonths(1).plusSeconds(1))
+            );
+
+            BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("100")), NO_OVERDRAFT, operations);
+
+            assertThat(account.getStatement(NOW).operations()).hasSize(1);
         }
     }
 }

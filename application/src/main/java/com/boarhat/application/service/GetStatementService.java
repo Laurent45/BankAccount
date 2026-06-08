@@ -7,6 +7,8 @@ import com.boarhat.domain.account.AccountId;
 import com.boarhat.domain.port.out.AccountRepository;
 import com.boarhat.domain.statement.Statement;
 
+import java.time.LocalDateTime;
+
 public class GetStatementService implements GetStatementUseCase {
     private final AccountRepository accountRepository;
 
@@ -19,6 +21,6 @@ public class GetStatementService implements GetStatementUseCase {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new AccountNotFoundException(accountId));
 
-        return account.getStatement();
+        return account.getStatement(LocalDateTime.now());
     }
 }

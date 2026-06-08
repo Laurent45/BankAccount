@@ -42,7 +42,7 @@ public final class SavingsAccount extends Account {
     protected void doWithdraw(Amount amount) {
         Balance newBalance = this.balance.subtract(amount);
         if (newBalance.isNegative()) {
-            throw new InsufficientFundsException(amount, this.accountId, this.balance);
+            throw new InsufficientFundsException(this.accountId, this.balance, amount);
         }
         this.balance = newBalance;
     }

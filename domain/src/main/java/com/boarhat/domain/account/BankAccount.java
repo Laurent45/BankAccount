@@ -45,7 +45,7 @@ public final class BankAccount extends Account {
     @Override
     protected void doWithdraw(Amount amount) {
         if (!isWithdrawAllowed(amount)) {
-            throw new InsufficientFundsException(amount, this.accountId, this.balance);
+            throw new InsufficientFundsException(this.accountId, this.balance, amount);
         }
         this.balance = this.balance.subtract(amount);
     }

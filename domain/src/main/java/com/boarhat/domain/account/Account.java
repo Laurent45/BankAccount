@@ -32,18 +32,17 @@ public abstract sealed class Account permits BankAccount, SavingsAccount {
         return this.balance;
     }
 
-    public final void deposit(Amount amount) {
+    public final void deposit(Amount amount, LocalDateTime occurredAt) {
         doDeposit(amount);
-        operations.add(new Operation(OperationType.DEPOSIT, amount, this.balance, LocalDateTime.now()));
+        operations.add(new Operation(OperationType.DEPOSIT, amount, this.balance, occurredAt));
     }
 
-    public final void withdraw(Amount amount) {
+    public final void withdraw(Amount amount, LocalDateTime occurredAt) {
         doWithdraw(amount);
-        operations.add(new Operation(OperationType.WITHDRAWAL, amount, this.balance, LocalDateTime.now()));
+        operations.add(new Operation(OperationType.WITHDRAWAL, amount, this.balance, occurredAt));
     }
 
-    public Statement getStatement() {
-        LocalDateTime now = LocalDateTime.now();
+    public Statement getStatement(LocalDateTime now) {
         LocalDateTime oneMonthAgo = now.minusMonths(1);
 
         List<Operation> filtered = operations.stream()
