@@ -38,16 +38,20 @@ public final class SavingsAccount extends Account {
         this.balance = this.balance.add(amount);
     }
 
-    private boolean isDepositCeilingReached(Amount amount) {
-        Balance maxBalance = Balance.of(depositCeiling.amount());
-        return this.balance.add(amount).isGreaterThan(maxBalance);
-    }
-
     @Override
     protected void doWithdraw(Amount amount) {
         if (this.balance.subtract(amount).isNegative()) {
             throw new InsufficientFundsException(amount, this.accountId, this.balance);
         }
         this.balance = this.balance.subtract(amount);
+    }
+
+    public DepositCeiling getDepositCeiling() {
+        return depositCeiling;
+    }
+
+    private boolean isDepositCeilingReached(Amount amount) {
+        Balance maxBalance = Balance.of(depositCeiling.amount());
+        return this.balance.add(amount).isGreaterThan(maxBalance);
     }
 }
