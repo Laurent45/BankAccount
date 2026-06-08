@@ -16,6 +16,10 @@ public record OverdraftAuthorization(Amount limit) {
     }
 
     public static OverdraftAuthorization allowed(Amount amount) {
+        Objects.requireNonNull(amount, "Overdraft limit must not be null");
+        if (amount.value().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Overdraft limit must be strictly positive");
+        }
         return new OverdraftAuthorization(amount);
     }
 }
