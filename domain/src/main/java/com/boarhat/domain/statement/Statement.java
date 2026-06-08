@@ -15,4 +15,7 @@ public record Statement(
         Balance balance,
         List<Operation> operations
 ) {
+    public Statement {
+        operations = List.copyOf(operations);
+    }
 }
