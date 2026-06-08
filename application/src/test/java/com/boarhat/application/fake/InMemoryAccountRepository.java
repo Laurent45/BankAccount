@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public class InMemoryAccountRepository implements AccountRepository {
 
-    Map<AccountId, Account> accounts = new HashMap<>();
+    private final Map<AccountId, Account> accounts = new HashMap<>();
 
     @Override
     public void save(Account account) {
