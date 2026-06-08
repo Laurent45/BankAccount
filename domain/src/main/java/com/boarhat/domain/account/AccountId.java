@@ -8,4 +8,8 @@ public record AccountId(UUID value) {
     public AccountId {
         Objects.requireNonNull(value, "AccountId value must not be null");
     }
+
+    public static AccountId of(UUID value) {
+        return new AccountId(value);
+    }
 }
