@@ -34,14 +34,14 @@ class StatementTest {
         void should_return_bank_account_type() {
             BankAccount account = BankAccount.create(ACCOUNT_ID);
 
-            assertThat(account.getStatement(NOW).accountType()).isEqualTo(AccountType.BANK_ACCOUNT);
+            assertThat(Statement.of(account, NOW, List.of()).accountType()).isEqualTo(AccountType.BANK_ACCOUNT);
         }
 
         @Test
         void should_return_savings_account_type() {
             SavingsAccount account = SavingsAccount.create(ACCOUNT_ID, CEILING);
 
-            assertThat(account.getStatement(NOW).accountType()).isEqualTo(AccountType.SAVINGS_ACCOUNT);
+            assertThat(Statement.of(account, NOW, List.of()).accountType()).isEqualTo(AccountType.SAVINGS_ACCOUNT);
         }
     }
 
@@ -50,10 +50,11 @@ class StatementTest {
 
         @Test
         void should_return_current_balance_in_statement() {
-            BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("500")), NO_OVERDRAFT, List.of());
-            account.deposit(Amount.of(new BigDecimal("200")), NOW);
+            BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("500")), NO_OVERDRAFT);
+            Operation operation = account.deposit(Amount.of(new BigDecimal("200")), NOW);
 
-            assertThat(account.getStatement(NOW).balance()).isEqualTo(Balance.of(new BigDecimal("700")));
+            assertThat(Statement.of(account, NOW, List.of(operation)).balance())
+                    .isEqualTo(Balance.of(new BigDecimal("700")));
         }
     }
 
@@ -72,9 +73,9 @@ class StatementTest {
                     new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("200")), Balance.of(new BigDecimal("250")), oneHourAgo)
             );
 
-            BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("250")), NO_OVERDRAFT, operations);
+            BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("250")), NO_OVERDRAFT);
 
-            Statement statement = account.getStatement(NOW);
+            Statement statement = Statement.of(account, NOW, operations);
 
             assertThat(statement.operations()).hasSize(3);
             assertThat(statement.operations().get(0).occurredAt()).isEqualTo(oneHourAgo);
@@ -93,9 +94,9 @@ class StatementTest {
                     new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("200")), Balance.of(new BigDecimal("300")), NOW.minusDays(7))
             );
 
-            BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("300")), NO_OVERDRAFT, operations);
+            BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("300")), NO_OVERDRAFT);
 
-            Statement statement = account.getStatement(NOW);
+            Statement statement = Statement.of(account, NOW, operations);
 
             assertThat(statement.operations()).hasSize(1);
             assertThat(statement.operations().getFirst().amount()).isEqualTo(Amount.of(new BigDecimal("200")));
@@ -107,9 +108,9 @@ class StatementTest {
                     new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("100")), Balance.of(new BigDecimal("100")), NOW.minusMonths(2))
             );
 
-            BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("100")), NO_OVERDRAFT, operations);
+            BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("100")), NO_OVERDRAFT);
 
-            assertThat(account.getStatement(NOW).operations()).isEmpty();
+            assertThat(Statement.of(account, NOW, operations).operations()).isEmpty();
         }
 
         @Test
@@ -118,9 +119,9 @@ class StatementTest {
                     new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("100")), Balance.of(new BigDecimal("100")), NOW.minusMonths(1))
             );
 
-            BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("100")), NO_OVERDRAFT, operations);
+            BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("100")), NO_OVERDRAFT);
 
-            assertThat(account.getStatement(NOW).operations()).isEmpty();
+            assertThat(Statement.of(account, NOW, operations).operations()).isEmpty();
         }
 
         @Test
@@ -129,9 +130,9 @@ class StatementTest {
                     new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("100")), Balance.of(new BigDecimal("100")), NOW.minusMonths(1).plusSeconds(1))
             );
 
-            BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("100")), NO_OVERDRAFT, operations);
+            BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("100")), NO_OVERDRAFT);
 
-            assertThat(account.getStatement(NOW).operations()).hasSize(1);
+            assertThat(Statement.of(account, NOW, operations).operations()).hasSize(1);
         }
     }
 }

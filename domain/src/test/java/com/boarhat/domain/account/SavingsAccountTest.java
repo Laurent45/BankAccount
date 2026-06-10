@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,7 +21,7 @@ class SavingsAccountTest {
     private static final LocalDateTime NOW = LocalDateTime.of(2026, 1, 15, 10, 0);
 
     private SavingsAccount accountWithBalance(String amount) {
-        return SavingsAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal(amount)), CEILING, List.of());
+        return SavingsAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal(amount)), CEILING);
     }
 
     @Nested
@@ -108,14 +107,14 @@ class SavingsAccountTest {
     class OperationRecording {
 
         @Test
-        void should_not_record_failed_deposit() {
+        void should_not_change_balance_on_failed_deposit() {
             DepositCeiling tightCeiling = new DepositCeiling(Amount.of(new BigDecimal("100")));
             SavingsAccount account = SavingsAccount.create(ACCOUNT_ID, tightCeiling);
 
             assertThatThrownBy(() -> account.deposit(Amount.of(new BigDecimal("200")), NOW))
                     .isInstanceOf(DepositCeilingReachedException.class);
 
-            assertThat(account.getStatement(NOW).operations()).isEmpty();
+            assertThat(account.getBalance()).isEqualTo(Balance.zero());
         }
     }
 }

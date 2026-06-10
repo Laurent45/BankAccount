@@ -1,26 +1,23 @@
 package com.boarhat.domain.account;
 
 import com.boarhat.domain.exception.InsufficientFundsException;
-import com.boarhat.domain.operation.Operation;
 import com.boarhat.domain.shared.Amount;
 import com.boarhat.domain.shared.Balance;
-
-import java.util.List;
 
 public final class BankAccount extends Account {
 
     private OverdraftAuthorization overdraftAuthorization;
 
     public static BankAccount create(AccountId accountId) {
-        return new BankAccount(accountId, Balance.zero(), OverdraftAuthorization.notAllowed(), List.of());
+        return new BankAccount(accountId, Balance.zero(), OverdraftAuthorization.notAllowed());
     }
 
-    public static BankAccount reconstruct(AccountId accountId, Balance balance, OverdraftAuthorization overdraftAuthorization, List<Operation> operations) {
-        return new BankAccount(accountId, balance, overdraftAuthorization, operations);
+    public static BankAccount reconstruct(AccountId accountId, Balance balance, OverdraftAuthorization overdraftAuthorization) {
+        return new BankAccount(accountId, balance, overdraftAuthorization);
     }
 
-    private BankAccount(AccountId accountId, Balance balance, OverdraftAuthorization overdraftAuthorization, List<Operation> operations) {
-        super(accountId, balance, operations);
+    private BankAccount(AccountId accountId, Balance balance, OverdraftAuthorization overdraftAuthorization) {
+        super(accountId, balance);
         this.overdraftAuthorization = overdraftAuthorization;
     }
 

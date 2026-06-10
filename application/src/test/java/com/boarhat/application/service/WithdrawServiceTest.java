@@ -37,7 +37,7 @@ class WithdrawServiceTest {
 
         @BeforeEach
         void givenAccountExists() {
-            accountRepository.save(BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("200")), OverdraftAuthorization.notAllowed(), List.of()));
+            accountRepository.save(BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("200")), OverdraftAuthorization.notAllowed()));
         }
 
         @Test

@@ -4,24 +4,18 @@ import com.boarhat.domain.operation.Operation;
 import com.boarhat.domain.operation.OperationType;
 import com.boarhat.domain.shared.Amount;
 import com.boarhat.domain.shared.Balance;
-import com.boarhat.domain.statement.Statement;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Objects;
 
 public abstract sealed class Account permits BankAccount, SavingsAccount {
 
-    private final List<Operation> operations;
     protected final AccountId accountId;
     protected Balance balance;
 
-    protected Account(AccountId accountId, Balance balance, List<Operation> operations) {
+    protected Account(AccountId accountId, Balance balance) {
         this.accountId = accountId;
         this.balance = balance;
-        this.operations = new ArrayList<>(operations);
     }
 
     public AccountId getAccountId() {
@@ -32,25 +26,14 @@ public abstract sealed class Account permits BankAccount, SavingsAccount {
         return this.balance;
     }
 
-    public final void deposit(Amount amount, LocalDateTime occurredAt) {
+    public final Operation deposit(Amount amount, LocalDateTime occurredAt) {
         doDeposit(amount);
-        operations.add(new Operation(OperationType.DEPOSIT, amount, this.balance, occurredAt));
+        return new Operation(OperationType.DEPOSIT, amount, this.balance, occurredAt);
     }
 
-    public final void withdraw(Amount amount, LocalDateTime occurredAt) {
+    public final Operation withdraw(Amount amount, LocalDateTime occurredAt) {
         doWithdraw(amount);
-        operations.add(new Operation(OperationType.WITHDRAWAL, amount, this.balance, occurredAt));
-    }
-
-    public Statement getStatement(LocalDateTime now) {
-        LocalDateTime oneMonthAgo = now.minusMonths(1);
-
-        List<Operation> filtered = operations.stream()
-                .filter(op -> op.occurredAt().isAfter(oneMonthAgo))
-                .sorted(Comparator.comparing(Operation::occurredAt).reversed())
-                .toList();
-
-        return new Statement(getAccountType(), getAccountId(), now, getBalance(), filtered);
+        return new Operation(OperationType.WITHDRAWAL, amount, this.balance, occurredAt);
     }
 
     public abstract AccountType getAccountType();

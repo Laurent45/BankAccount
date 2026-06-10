@@ -2,26 +2,23 @@ package com.boarhat.domain.account;
 
 import com.boarhat.domain.exception.DepositCeilingReachedException;
 import com.boarhat.domain.exception.InsufficientFundsException;
-import com.boarhat.domain.operation.Operation;
 import com.boarhat.domain.shared.Amount;
 import com.boarhat.domain.shared.Balance;
-
-import java.util.List;
 
 public final class SavingsAccount extends Account {
 
     private final DepositCeiling depositCeiling;
 
     public static SavingsAccount create(AccountId accountId, DepositCeiling depositCeiling) {
-        return new SavingsAccount(accountId, Balance.zero(), depositCeiling, List.of());
+        return new SavingsAccount(accountId, Balance.zero(), depositCeiling);
     }
 
-    public static SavingsAccount reconstruct(AccountId accountId, Balance balance, DepositCeiling depositCeiling, List<Operation> operations) {
-        return new SavingsAccount(accountId, balance, depositCeiling, operations);
+    public static SavingsAccount reconstruct(AccountId accountId, Balance balance, DepositCeiling depositCeiling) {
+        return new SavingsAccount(accountId, balance, depositCeiling);
     }
 
-    private SavingsAccount(AccountId accountId, Balance balance, DepositCeiling depositCeiling, List<Operation> operations) {
-        super(accountId, balance, operations);
+    private SavingsAccount(AccountId accountId, Balance balance, DepositCeiling depositCeiling) {
+        super(accountId, balance);
         this.depositCeiling = depositCeiling;
     }
 

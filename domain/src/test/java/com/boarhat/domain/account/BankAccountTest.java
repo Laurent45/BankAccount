@@ -1,16 +1,15 @@
 package com.boarhat.domain.account;
 
 import com.boarhat.domain.exception.InsufficientFundsException;
+import com.boarhat.domain.operation.Operation;
 import com.boarhat.domain.operation.OperationType;
 import com.boarhat.domain.shared.Amount;
 import com.boarhat.domain.shared.Balance;
-import com.boarhat.domain.statement.Statement;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
@@ -22,12 +21,12 @@ class BankAccountTest {
     private static final LocalDateTime NOW = LocalDateTime.of(2026, 1, 15, 10, 0);
 
     private BankAccount accountWithBalance(String amount) {
-        return BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal(amount)), NO_OVERDRAFT, List.of());
+        return BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal(amount)), NO_OVERDRAFT);
     }
 
     private BankAccount accountWithOverdraft() {
         return BankAccount.reconstruct(ACCOUNT_ID, Balance.zero(),
-                OverdraftAuthorization.allowed(Amount.of(new BigDecimal("100"))), List.of());
+                OverdraftAuthorization.allowed(Amount.of(new BigDecimal("100"))));
     }
 
     @Nested
@@ -114,7 +113,7 @@ class BankAccountTest {
         @Test
         void should_throw_after_overdraft_is_denied() {
             BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("100")),
-                    OverdraftAuthorization.allowed(Amount.of(new BigDecimal("500"))), List.of());
+                    OverdraftAuthorization.allowed(Amount.of(new BigDecimal("500"))));
 
             account.denyOverdraft();
 
@@ -128,46 +127,43 @@ class BankAccountTest {
     class OperationRecording {
 
         @Test
-        void should_record_deposit_operation() {
+        void should_return_deposit_operation() {
             BankAccount account = BankAccount.create(ACCOUNT_ID);
-            account.deposit(Amount.of(new BigDecimal("100")), NOW);
 
-            Statement statement = account.getStatement(NOW);
+            Operation operation = account.deposit(Amount.of(new BigDecimal("100")), NOW);
 
-            assertThat(statement.operations()).hasSize(1);
-            assertThat(statement.operations().getFirst().type()).isEqualTo(OperationType.DEPOSIT);
-            assertThat(statement.operations().getFirst().amount()).isEqualTo(Amount.of(new BigDecimal("100")));
+            assertThat(operation.type()).isEqualTo(OperationType.DEPOSIT);
+            assertThat(operation.amount()).isEqualTo(Amount.of(new BigDecimal("100")));
+            assertThat(operation.occurredAt()).isEqualTo(NOW);
         }
 
         @Test
-        void should_record_withdrawal_operation() {
+        void should_return_withdrawal_operation() {
             BankAccount account = accountWithBalance("200");
-            account.withdraw(Amount.of(new BigDecimal("50")), NOW);
 
-            Statement statement = account.getStatement(NOW);
+            Operation operation = account.withdraw(Amount.of(new BigDecimal("50")), NOW);
 
-            assertThat(statement.operations()).hasSize(1);
-            assertThat(statement.operations().getFirst().type()).isEqualTo(OperationType.WITHDRAWAL);
-            assertThat(statement.operations().getFirst().amount()).isEqualTo(Amount.of(new BigDecimal("50")));
+            assertThat(operation.type()).isEqualTo(OperationType.WITHDRAWAL);
+            assertThat(operation.amount()).isEqualTo(Amount.of(new BigDecimal("50")));
         }
 
         @Test
         void should_record_balance_after_deposit() {
             BankAccount account = accountWithBalance("200");
-            account.deposit(Amount.of(new BigDecimal("100")), NOW);
 
-            assertThat(account.getStatement(NOW).operations().getFirst().balance())
-                    .isEqualTo(Balance.of(new BigDecimal("300")));
+            Operation operation = account.deposit(Amount.of(new BigDecimal("100")), NOW);
+
+            assertThat(operation.balance()).isEqualTo(Balance.of(new BigDecimal("300")));
         }
 
         @Test
-        void should_not_record_failed_withdrawal() {
+        void should_not_change_balance_on_failed_withdrawal() {
             BankAccount account = BankAccount.create(ACCOUNT_ID);
 
             assertThatThrownBy(() -> account.withdraw(Amount.of(new BigDecimal("100")), NOW))
                     .isInstanceOf(InsufficientFundsException.class);
 
-            assertThat(account.getStatement(NOW).operations()).isEmpty();
+            assertThat(account.getBalance()).isEqualTo(Balance.zero());
         }
     }
 }

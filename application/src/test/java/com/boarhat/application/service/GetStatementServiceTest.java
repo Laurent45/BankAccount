@@ -22,7 +22,7 @@ class GetStatementServiceTest {
     @BeforeEach
     void setUp() {
         accountRepository = new InMemoryAccountRepository();
-        getStatementService = new GetStatementService(accountRepository);
+        getStatementService = new GetStatementService(accountRepository, accountRepository);
     }
 
     @Test
