@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS operation
     type        VARCHAR(32)    NOT NULL,
     amount      NUMERIC(19, 4) NOT NULL,
     balance     NUMERIC(19, 4) NOT NULL,
-    occurred_at TIMESTAMP      NOT NULL
+    occurred_at TIMESTAMPTZ    NOT NULL
 );
 
 CREATE INDEX IF NOT EXISTS operation_account_id_occurred_at_idx

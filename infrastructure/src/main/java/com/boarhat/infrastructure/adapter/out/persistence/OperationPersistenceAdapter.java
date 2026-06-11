@@ -7,7 +7,7 @@ import com.boarhat.infrastructure.adapter.out.persistence.mapper.OperationMapper
 import com.boarhat.infrastructure.adapter.out.persistence.repository.OperationJpaRepository;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @Component
@@ -20,7 +20,7 @@ class OperationPersistenceAdapter implements OperationRepository {
     }
 
     @Override
-    public List<Operation> findByAccountIdSince(AccountId accountId, LocalDateTime since) {
+    public List<Operation> findByAccountIdSince(AccountId accountId, Instant since) {
         return operationJpaRepository.findByAccountIdAndOccurredAtAfterOrderByOccurredAtDesc(accountId.value(), since)
                 .stream()
                 .map(OperationMapper::toDomain)

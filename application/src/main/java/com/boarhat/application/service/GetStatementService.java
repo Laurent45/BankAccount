@@ -9,7 +9,7 @@ import com.boarhat.domain.port.out.AccountRepository;
 import com.boarhat.domain.port.out.OperationRepository;
 import com.boarhat.domain.statement.Statement;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 public class GetStatementService implements GetStatementUseCase {
@@ -26,8 +26,8 @@ public class GetStatementService implements GetStatementUseCase {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new AccountNotFoundException(accountId));
 
-        LocalDateTime now = LocalDateTime.now();
-        List<Operation> operations = operationRepository.findByAccountIdSince(accountId, now.minus(Statement.HISTORY_WINDOW));
+        Instant now = Instant.now();
+        List<Operation> operations = operationRepository.findByAccountIdSince(accountId, Statement.windowStart(now));
 
         return Statement.of(account, now, operations);
     }

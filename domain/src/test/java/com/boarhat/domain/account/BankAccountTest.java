@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
@@ -18,7 +18,7 @@ class BankAccountTest {
 
     private static final AccountId ACCOUNT_ID = new AccountId(UUID.randomUUID());
     private static final OverdraftAuthorization NO_OVERDRAFT = OverdraftAuthorization.notAllowed();
-    private static final LocalDateTime NOW = LocalDateTime.of(2026, 1, 15, 10, 0);
+    private static final Instant NOW = Instant.parse("2026-01-15T10:00:00Z");
 
     private BankAccount accountWithBalance(String amount) {
         return BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal(amount)), NO_OVERDRAFT);
@@ -104,18 +104,18 @@ class BankAccountTest {
         void should_allow_withdrawal_after_overdraft_is_authorized() {
             BankAccount account = accountWithBalance("100");
 
-            account.allowOverdraft(OverdraftAuthorization.allowed(Amount.of(new BigDecimal("200"))));
+            account.updateOverdraftAuthorization(OverdraftAuthorization.allowed(Amount.of(new BigDecimal("200"))));
             account.withdraw(Amount.of(new BigDecimal("250")), NOW);
 
             assertThat(account.getBalance()).isEqualTo(Balance.of(new BigDecimal("-150")));
         }
 
         @Test
-        void should_throw_after_overdraft_is_denied() {
+        void should_throw_after_overdraft_authorization_is_removed() {
             BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("100")),
                     OverdraftAuthorization.allowed(Amount.of(new BigDecimal("500"))));
 
-            account.denyOverdraft();
+            account.updateOverdraftAuthorization(OverdraftAuthorization.notAllowed());
 
             assertThatThrownBy(() -> account.withdraw(Amount.of(new BigDecimal("200")), NOW))
                     .isInstanceOf(InsufficientFundsException.class);

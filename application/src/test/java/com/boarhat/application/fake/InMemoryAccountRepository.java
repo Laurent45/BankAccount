@@ -6,7 +6,7 @@ import com.boarhat.domain.operation.Operation;
 import com.boarhat.domain.port.out.AccountRepository;
 import com.boarhat.domain.port.out.OperationRepository;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +35,7 @@ public class InMemoryAccountRepository implements AccountRepository, OperationRe
     }
 
     @Override
-    public List<Operation> findByAccountIdSince(AccountId accountId, LocalDateTime since) {
+    public List<Operation> findByAccountIdSince(AccountId accountId, Instant since) {
         return operations.getOrDefault(accountId, List.of()).stream()
                 .filter(operation -> operation.occurredAt().isAfter(since))
                 .toList();

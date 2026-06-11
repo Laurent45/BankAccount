@@ -16,7 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Import(TestcontainersConfiguration.class)
 class AccountPersistenceAdapterTest {
 
-    private static final LocalDateTime NOW = LocalDateTime.of(2026, 6, 1, 12, 0);
+    private static final Instant NOW = Instant.parse("2026-06-01T12:00:00Z");
 
     @Autowired
     private AccountPersistenceAdapter accountPersistenceAdapter;

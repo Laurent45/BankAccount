@@ -3,14 +3,14 @@ package com.boarhat.infrastructure.adapter.in.web.response;
 import com.boarhat.domain.statement.Statement;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
 public record StatementResponse(
         String accountType,
         UUID accountId,
-        LocalDateTime issuedAt,
+        Instant issuedAt,
         BigDecimal balance,
         List<OperationResponse> operations
 ) {

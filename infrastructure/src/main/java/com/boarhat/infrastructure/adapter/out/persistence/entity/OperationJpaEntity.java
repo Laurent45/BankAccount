@@ -11,7 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -36,13 +36,13 @@ public class OperationJpaEntity {
     private BigDecimal balance;
 
     @Column(nullable = false)
-    private LocalDateTime occurredAt;
+    private Instant occurredAt;
 
     protected OperationJpaEntity() {
     }
 
     public OperationJpaEntity(UUID accountId, OperationType type, BigDecimal amount,
-                              BigDecimal balance, LocalDateTime occurredAt) {
+                              BigDecimal balance, Instant occurredAt) {
         this.accountId = accountId;
         this.type = type;
         this.amount = amount;
@@ -70,7 +70,7 @@ public class OperationJpaEntity {
         return balance;
     }
 
-    public LocalDateTime getOccurredAt() {
+    public Instant getOccurredAt() {
         return occurredAt;
     }
 }

@@ -5,7 +5,7 @@ import com.boarhat.domain.operation.OperationType;
 import com.boarhat.domain.shared.Amount;
 import com.boarhat.domain.shared.Balance;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Objects;
 
 public abstract sealed class Account permits BankAccount, SavingsAccount {
@@ -26,12 +26,12 @@ public abstract sealed class Account permits BankAccount, SavingsAccount {
         return this.balance;
     }
 
-    public final Operation deposit(Amount amount, LocalDateTime occurredAt) {
+    public final Operation deposit(Amount amount, Instant occurredAt) {
         doDeposit(amount);
         return new Operation(OperationType.DEPOSIT, amount, this.balance, occurredAt);
     }
 
-    public final Operation withdraw(Amount amount, LocalDateTime occurredAt) {
+    public final Operation withdraw(Amount amount, Instant occurredAt) {
         doWithdraw(amount);
         return new Operation(OperationType.WITHDRAWAL, amount, this.balance, occurredAt);
     }

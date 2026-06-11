@@ -7,7 +7,7 @@ import com.boarhat.domain.account.Account;
 import com.boarhat.domain.operation.Operation;
 import com.boarhat.domain.port.out.AccountRepository;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public class WithdrawService implements WithdrawUseCase {
 
@@ -22,7 +22,7 @@ public class WithdrawService implements WithdrawUseCase {
         Account account = accountRepository.findById(command.accountId())
                 .orElseThrow(() -> new AccountNotFoundException(command.accountId()));
 
-        Operation operation = account.withdraw(command.amount(), LocalDateTime.now());
+        Operation operation = account.withdraw(command.amount(), Instant.now());
 
         accountRepository.save(account, operation);
     }

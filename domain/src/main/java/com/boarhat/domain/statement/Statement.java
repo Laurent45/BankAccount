@@ -6,15 +6,16 @@ import com.boarhat.domain.account.AccountType;
 import com.boarhat.domain.operation.Operation;
 import com.boarhat.domain.shared.Balance;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.time.Period;
+import java.time.ZoneOffset;
 import java.util.Comparator;
 import java.util.List;
 
 public record Statement(
         AccountType accountType,
         AccountId accountId,
-        LocalDateTime issuedAt,
+        Instant issuedAt,
         Balance balance,
         List<Operation> operations
 ) {
@@ -24,8 +25,8 @@ public record Statement(
         operations = List.copyOf(operations);
     }
 
-    public static Statement of(Account account, LocalDateTime issuedAt, List<Operation> operations) {
-        LocalDateTime windowStart = issuedAt.minus(HISTORY_WINDOW);
+    public static Statement of(Account account, Instant issuedAt, List<Operation> operations) {
+        Instant windowStart = windowStart(issuedAt);
 
         List<Operation> recent = operations.stream()
                 .filter(operation -> operation.occurredAt().isAfter(windowStart))
@@ -33,5 +34,11 @@ public record Statement(
                 .toList();
 
         return new Statement(account.getAccountType(), account.getAccountId(), issuedAt, account.getBalance(), recent);
+    }
+
+    // "One month ago" is calendar arithmetic, which an Instant alone cannot do; the window
+    // is anchored on UTC so it is independent of wherever the application happens to run.
+    public static Instant windowStart(Instant issuedAt) {
+        return issuedAt.atZone(ZoneOffset.UTC).minus(HISTORY_WINDOW).toInstant();
     }
 }

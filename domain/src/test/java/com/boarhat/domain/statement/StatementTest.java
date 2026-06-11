@@ -14,7 +14,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,7 +27,19 @@ class StatementTest {
     private static final AccountId ACCOUNT_ID = new AccountId(UUID.randomUUID());
     private static final OverdraftAuthorization NO_OVERDRAFT = OverdraftAuthorization.notAllowed();
     private static final DepositCeiling CEILING = new DepositCeiling(Amount.of(new BigDecimal("10000")));
-    private static final LocalDateTime NOW = LocalDateTime.of(2026, 6, 8, 12, 0);
+    private static final Instant NOW = Instant.parse("2026-06-08T12:00:00Z");
+
+    private static Instant daysAgo(int days) {
+        return NOW.minus(days, ChronoUnit.DAYS);
+    }
+
+    private static Instant hoursAgo(int hours) {
+        return NOW.minus(hours, ChronoUnit.HOURS);
+    }
+
+    private static Instant monthsAgo(int months) {
+        return NOW.atZone(ZoneOffset.UTC).minusMonths(months).toInstant();
+    }
 
     @Nested
     class Type {
@@ -63,9 +77,9 @@ class StatementTest {
 
         @Test
         void should_sort_operations_in_reverse_chronological_order() {
-            LocalDateTime twoDaysAgo = NOW.minusDays(2);
-            LocalDateTime yesterday = NOW.minusDays(1);
-            LocalDateTime oneHourAgo = NOW.minusHours(1);
+            Instant twoDaysAgo = daysAgo(2);
+            Instant yesterday = daysAgo(1);
+            Instant oneHourAgo = hoursAgo(1);
 
             List<Operation> operations = List.of(
                     new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("100")), Balance.of(new BigDecimal("100")), twoDaysAgo),
@@ -90,8 +104,8 @@ class StatementTest {
         @Test
         void should_exclude_operations_older_than_one_month() {
             List<Operation> operations = List.of(
-                    new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("100")), Balance.of(new BigDecimal("100")), NOW.minusMonths(2)),
-                    new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("200")), Balance.of(new BigDecimal("300")), NOW.minusDays(7))
+                    new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("100")), Balance.of(new BigDecimal("100")), monthsAgo(2)),
+                    new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("200")), Balance.of(new BigDecimal("300")), daysAgo(7))
             );
 
             BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("300")), NO_OVERDRAFT);
@@ -105,7 +119,7 @@ class StatementTest {
         @Test
         void should_return_empty_when_all_operations_older_than_one_month() {
             List<Operation> operations = List.of(
-                    new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("100")), Balance.of(new BigDecimal("100")), NOW.minusMonths(2))
+                    new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("100")), Balance.of(new BigDecimal("100")), monthsAgo(2))
             );
 
             BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("100")), NO_OVERDRAFT);
@@ -116,7 +130,7 @@ class StatementTest {
         @Test
         void should_exclude_operation_exactly_one_month_old() {
             List<Operation> operations = List.of(
-                    new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("100")), Balance.of(new BigDecimal("100")), NOW.minusMonths(1))
+                    new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("100")), Balance.of(new BigDecimal("100")), monthsAgo(1))
             );
 
             BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("100")), NO_OVERDRAFT);
@@ -127,7 +141,7 @@ class StatementTest {
         @Test
         void should_include_operation_one_second_within_rolling_month() {
             List<Operation> operations = List.of(
-                    new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("100")), Balance.of(new BigDecimal("100")), NOW.minusMonths(1).plusSeconds(1))
+                    new Operation(OperationType.DEPOSIT, Amount.of(new BigDecimal("100")), Balance.of(new BigDecimal("100")), monthsAgo(1).plusSeconds(1))
             );
 
             BankAccount account = BankAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal("100")), NO_OVERDRAFT);

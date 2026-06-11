@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,7 +18,7 @@ class SavingsAccountTest {
 
     private static final AccountId ACCOUNT_ID = new AccountId(UUID.randomUUID());
     private static final DepositCeiling CEILING = new DepositCeiling(Amount.of(new BigDecimal("1000")));
-    private static final LocalDateTime NOW = LocalDateTime.of(2026, 1, 15, 10, 0);
+    private static final Instant NOW = Instant.parse("2026-01-15T10:00:00Z");
 
     private SavingsAccount accountWithBalance(String amount) {
         return SavingsAccount.reconstruct(ACCOUNT_ID, Balance.of(new BigDecimal(amount)), CEILING);
