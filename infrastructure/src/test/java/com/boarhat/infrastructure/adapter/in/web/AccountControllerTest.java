@@ -125,4 +125,49 @@ class AccountControllerTest {
                 .exchange()
                 .expectStatus().isBadRequest();
     }
+
+    @Test
+    void should_get_bank_account() {
+        UUID accountId = createBankAccount();
+
+        AccountResponse response = restTestClient.get().uri("/accounts/{id}", accountId)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(AccountResponse.class)
+                .returnResult().getResponseBody();
+
+        assertThat(response.accountId()).isEqualTo(accountId);
+        assertThat(response.accountType()).isEqualTo("BANK_ACCOUNT");
+        assertThat(response.balance()).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(response.overdraftLimit()).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(response.depositCeiling()).isNull();
+    }
+
+    @Test
+    void should_get_savings_account() {
+        UUID accountId = restTestClient.post().uri("/accounts/savings")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new CreateSavingsAccountRequest(new BigDecimal("1000")))
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody(AccountCreatedResponse.class)
+                .returnResult().getResponseBody().accountId();
+
+        AccountResponse response = restTestClient.get().uri("/accounts/{id}", accountId)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(AccountResponse.class)
+                .returnResult().getResponseBody();
+
+        assertThat(response.accountType()).isEqualTo("SAVINGS_ACCOUNT");
+        assertThat(response.depositCeiling()).isEqualByComparingTo(new BigDecimal("1000"));
+        assertThat(response.overdraftLimit()).isNull();
+    }
+
+    @Test
+    void should_return_404_when_getting_unknown_account() {
+        restTestClient.get().uri("/accounts/{id}", UUID.randomUUID())
+                .exchange()
+                .expectStatus().isNotFound();
+    }
 }

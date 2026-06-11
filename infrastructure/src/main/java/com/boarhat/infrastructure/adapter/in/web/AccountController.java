@@ -6,6 +6,7 @@ import com.boarhat.application.command.WithdrawCommand;
 import com.boarhat.application.port.in.CreateBankAccountUseCase;
 import com.boarhat.application.port.in.CreateSavingsAccountUseCase;
 import com.boarhat.application.port.in.DepositUseCase;
+import com.boarhat.application.port.in.GetAccountUseCase;
 import com.boarhat.application.port.in.GetStatementUseCase;
 import com.boarhat.application.port.in.WithdrawUseCase;
 import com.boarhat.domain.account.AccountId;
@@ -32,17 +33,20 @@ class AccountController {
     private final CreateSavingsAccountUseCase createSavingsAccountUseCase;
     private final DepositUseCase depositUseCase;
     private final WithdrawUseCase withdrawUseCase;
+    private final GetAccountUseCase getAccountUseCase;
     private final GetStatementUseCase getStatementUseCase;
 
     AccountController(CreateBankAccountUseCase createBankAccountUseCase,
                              CreateSavingsAccountUseCase createSavingsAccountUseCase,
                              DepositUseCase depositUseCase,
                              WithdrawUseCase withdrawUseCase,
+                             GetAccountUseCase getAccountUseCase,
                              GetStatementUseCase getStatementUseCase) {
         this.createBankAccountUseCase = createBankAccountUseCase;
         this.createSavingsAccountUseCase = createSavingsAccountUseCase;
         this.depositUseCase = depositUseCase;
         this.withdrawUseCase = withdrawUseCase;
+        this.getAccountUseCase = getAccountUseCase;
         this.getStatementUseCase = getStatementUseCase;
     }
 
@@ -74,6 +78,11 @@ class AccountController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void withdraw(@PathVariable("accountId") UUID accountId, @RequestBody WithdrawRequest request) {
         withdrawUseCase.withdraw(new WithdrawCommand(AccountId.of(accountId), Amount.of(request.amount())));
+    }
+
+    @GetMapping("/{accountId}")
+    public AccountResponse getAccount(@PathVariable("accountId") UUID accountId) {
+        return AccountResponse.from(getAccountUseCase.getAccount(AccountId.of(accountId)));
     }
 
     @GetMapping("/{accountId}/statement")
