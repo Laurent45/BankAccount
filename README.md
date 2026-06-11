@@ -1,35 +1,37 @@
 # Bank Account
 
-A bank account kata built with **hexagonal architecture** (ports & adapters): a framework-free domain and application core, with Spring Boot, PostgreSQL and a REST API kept at the edges.
+A bank account kata built with **hexagonal architecture** (ports & adapters, Alistair Cockburn's original two-zone shape): a single framework-free hexagon containing the domain model and the use cases, with Spring Boot, PostgreSQL and a REST API kept at the edges.
 
 ## Architecture
 
 ```
-                        ┌─────────────────────────────────────────────┐
-                        │               infrastructure                │
-                        │                                             │
- HTTP ──► adapter.in.web ──► application.port.in ◄── implements ──┐   │
-                        │         (use cases)                     │   │
-                        │             │                  ┌────────┴─┐ │
-                        │             ▼                  │ services │ │
-                        │      domain (entities,         └────────┬─┘ │
-                        │       value objects)                    │   │
-                        │             ▲                           │   │
-                        │   domain.port.out ◄── calls ────────────┘   │
-                        │             ▲                               │
-                        │   adapter.out.persistence ──► PostgreSQL    │
-                        └─────────────────────────────────────────────┘
+ ┌─ infrastructure ─────────────────────────────────────────────────┐
+ │                                                                  │
+ │  HTTP ──► adapter.in.web          adapter.out.persistence ──► PostgreSQL
+ │               │                              │                   │
+ └───────────────┼──────────────────────────────┼───────────────────┘
+                 │ calls                        │ implements
+ ┌─ domain (the hexagon) ───────────────────────┼───────────────────┐
+ │               ▼                              ▼                   │
+ │   port.in (use cases + commands)        port.out (repositories)  │
+ │    ├ account/   ├ operation/  ├ statement/   ▲                   │
+ │               │                              │                   │
+ │               ▼                              │                   │
+ │   package-private services ──────────────────┘                   │
+ │               │                                                  │
+ │               ▼                                                  │
+ │   entities & value objects (account, operation, statement, …)    │
+ └──────────────────────────────────────────────────────────────────┘
 ```
 
-Three Maven modules with a strict dependency direction — `infrastructure → application → domain`:
+Two Maven modules with a strict dependency direction — `infrastructure → domain`:
 
 | Module | Role | Dependencies |
 |---|---|---|
-| `domain` | Entities (`BankAccount`, `SavingsAccount`), value objects (`Amount`, `Balance`), business rules, outbound ports | none |
-| `application` | Use cases (inbound ports), services orchestrating the domain, commands | domain |
-| `infrastructure` | Spring Boot app: REST adapter (`adapter.in.web`), JPA persistence adapter (`adapter.out.persistence`), wiring | application |
+| `domain` | The hexagon: entities (`BankAccount`, `SavingsAccount`), value objects (`Amount`, `Balance`), business rules, use cases and commands (inbound ports), repository interfaces (outbound ports) | none |
+| `infrastructure` | The adapters: Spring Boot app, REST adapter (`adapter.in.web`), JPA persistence adapter (`adapter.out.persistence`), wiring | domain |
 
-The domain and application modules have **zero framework dependencies**. Spring only exists in `infrastructure`, where `UseCaseConfiguration` instantiates the services and plugs the adapters into the ports.
+The domain module has **zero framework dependencies** and is reachable **only through its ports** — and the compiler enforces it. The service implementing each use case is package-private, co-located with its interface in an intent-grouped subpackage (`port.in.account`, `port.in.operation`, `port.in.statement`), and exposed solely through a static factory on the port (`DepositUseCase.create(accountRepository)`). Spring only exists in `infrastructure`, where `UseCaseConfiguration` calls those factories and plugs the adapters into the ports.
 
 ## Business rules
 
