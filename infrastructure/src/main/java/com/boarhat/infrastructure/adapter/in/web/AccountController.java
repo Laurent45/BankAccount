@@ -12,6 +12,7 @@ import com.boarhat.domain.account.AccountId;
 import com.boarhat.domain.account.DepositCeiling;
 import com.boarhat.domain.shared.Amount;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
 import java.util.UUID;
 
 @RestController
@@ -45,18 +47,21 @@ class AccountController {
     }
 
     @PostMapping("/bank")
-    @ResponseStatus(HttpStatus.CREATED)
-    public AccountCreatedResponse createBankAccount() {
+    public ResponseEntity<AccountCreatedResponse> createBankAccount() {
         AccountId accountId = createBankAccountUseCase.createBankAccount();
-        return new AccountCreatedResponse(accountId.value());
+        return created(accountId);
     }
 
     @PostMapping("/savings")
-    @ResponseStatus(HttpStatus.CREATED)
-    public AccountCreatedResponse createSavingsAccount(@RequestBody CreateSavingsAccountRequest request) {
+    public ResponseEntity<AccountCreatedResponse> createSavingsAccount(@RequestBody CreateSavingsAccountRequest request) {
         AccountId accountId = createSavingsAccountUseCase.createSavingsAccount(
                 new CreateSavingsAccountCommand(new DepositCeiling(Amount.of(request.depositCeiling()))));
-        return new AccountCreatedResponse(accountId.value());
+        return created(accountId);
+    }
+
+    private static ResponseEntity<AccountCreatedResponse> created(AccountId accountId) {
+        URI location = URI.create("/accounts/" + accountId.value());
+        return ResponseEntity.created(location).body(new AccountCreatedResponse(accountId.value()));
     }
 
     @PostMapping("/{accountId}/deposits")
