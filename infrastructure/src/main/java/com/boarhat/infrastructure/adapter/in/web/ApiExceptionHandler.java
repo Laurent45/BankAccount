@@ -1,6 +1,7 @@
 package com.boarhat.infrastructure.adapter.in.web;
 
 import com.boarhat.application.exception.AccountNotFoundException;
+import com.boarhat.application.exception.OverdraftNotSupportedException;
 import com.boarhat.domain.exception.DepositCeilingReachedException;
 import com.boarhat.domain.exception.InsufficientFundsException;
 import org.springframework.http.HttpStatus;
@@ -16,7 +17,8 @@ class ApiExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, exception.getMessage());
     }
 
-    @ExceptionHandler({InsufficientFundsException.class, DepositCeilingReachedException.class})
+    @ExceptionHandler({InsufficientFundsException.class, DepositCeilingReachedException.class,
+            OverdraftNotSupportedException.class})
     ProblemDetail handleBusinessRuleViolation(RuntimeException exception) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_CONTENT, exception.getMessage());
     }

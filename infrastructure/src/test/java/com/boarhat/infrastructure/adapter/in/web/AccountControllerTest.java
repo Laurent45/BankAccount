@@ -170,4 +170,55 @@ class AccountControllerTest {
                 .exchange()
                 .expectStatus().isNotFound();
     }
+
+    @Test
+    void should_update_overdraft_authorization_of_bank_account() {
+        UUID accountId = createBankAccount();
+
+        restTestClient.put().uri("/accounts/{id}/overdraft-authorization", accountId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new UpdateOverdraftAuthorizationRequest(new BigDecimal("200")))
+                .exchange()
+                .expectStatus().isNoContent();
+
+        AccountResponse response = restTestClient.get().uri("/accounts/{id}", accountId)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(AccountResponse.class)
+                .returnResult().getResponseBody();
+        assertThat(response.overdraftLimit()).isEqualByComparingTo(new BigDecimal("200"));
+    }
+
+    @Test
+    void should_allow_withdrawal_within_overdraft_after_authorization() {
+        UUID accountId = createBankAccount();
+        restTestClient.put().uri("/accounts/{id}/overdraft-authorization", accountId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new UpdateOverdraftAuthorizationRequest(new BigDecimal("100")))
+                .exchange()
+                .expectStatus().isNoContent();
+
+        restTestClient.post().uri("/accounts/{id}/withdrawals", accountId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new WithdrawRequest(new BigDecimal("80")))
+                .exchange()
+                .expectStatus().isNoContent();
+    }
+
+    @Test
+    void should_return_422_when_setting_overdraft_on_savings_account() {
+        UUID accountId = restTestClient.post().uri("/accounts/savings")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new CreateSavingsAccountRequest(new BigDecimal("1000")))
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody(AccountCreatedResponse.class)
+                .returnResult().getResponseBody().accountId();
+
+        restTestClient.put().uri("/accounts/{id}/overdraft-authorization", accountId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new UpdateOverdraftAuthorizationRequest(new BigDecimal("200")))
+                .exchange()
+                .expectStatus().isEqualTo(HttpStatus.UNPROCESSABLE_CONTENT);
+    }
 }

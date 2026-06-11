@@ -2,21 +2,25 @@ package com.boarhat.infrastructure.adapter.in.web;
 
 import com.boarhat.application.command.CreateSavingsAccountCommand;
 import com.boarhat.application.command.DepositCommand;
+import com.boarhat.application.command.UpdateOverdraftAuthorizationCommand;
 import com.boarhat.application.command.WithdrawCommand;
 import com.boarhat.application.port.in.CreateBankAccountUseCase;
 import com.boarhat.application.port.in.CreateSavingsAccountUseCase;
 import com.boarhat.application.port.in.DepositUseCase;
 import com.boarhat.application.port.in.GetAccountUseCase;
 import com.boarhat.application.port.in.GetStatementUseCase;
+import com.boarhat.application.port.in.UpdateOverdraftAuthorizationUseCase;
 import com.boarhat.application.port.in.WithdrawUseCase;
 import com.boarhat.domain.account.AccountId;
 import com.boarhat.domain.account.DepositCeiling;
+import com.boarhat.domain.account.OverdraftAuthorization;
 import com.boarhat.domain.shared.Amount;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -33,6 +37,7 @@ class AccountController {
     private final CreateSavingsAccountUseCase createSavingsAccountUseCase;
     private final DepositUseCase depositUseCase;
     private final WithdrawUseCase withdrawUseCase;
+    private final UpdateOverdraftAuthorizationUseCase updateOverdraftAuthorizationUseCase;
     private final GetAccountUseCase getAccountUseCase;
     private final GetStatementUseCase getStatementUseCase;
 
@@ -40,12 +45,14 @@ class AccountController {
                              CreateSavingsAccountUseCase createSavingsAccountUseCase,
                              DepositUseCase depositUseCase,
                              WithdrawUseCase withdrawUseCase,
+                             UpdateOverdraftAuthorizationUseCase updateOverdraftAuthorizationUseCase,
                              GetAccountUseCase getAccountUseCase,
                              GetStatementUseCase getStatementUseCase) {
         this.createBankAccountUseCase = createBankAccountUseCase;
         this.createSavingsAccountUseCase = createSavingsAccountUseCase;
         this.depositUseCase = depositUseCase;
         this.withdrawUseCase = withdrawUseCase;
+        this.updateOverdraftAuthorizationUseCase = updateOverdraftAuthorizationUseCase;
         this.getAccountUseCase = getAccountUseCase;
         this.getStatementUseCase = getStatementUseCase;
     }
@@ -78,6 +85,14 @@ class AccountController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void withdraw(@PathVariable("accountId") UUID accountId, @RequestBody WithdrawRequest request) {
         withdrawUseCase.withdraw(new WithdrawCommand(AccountId.of(accountId), Amount.of(request.amount())));
+    }
+
+    @PutMapping("/{accountId}/overdraft-authorization")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateOverdraftAuthorization(@PathVariable("accountId") UUID accountId,
+                                             @RequestBody UpdateOverdraftAuthorizationRequest request) {
+        updateOverdraftAuthorizationUseCase.updateOverdraftAuthorization(new UpdateOverdraftAuthorizationCommand(
+                AccountId.of(accountId), new OverdraftAuthorization(Amount.of(request.limit()))));
     }
 
     @GetMapping("/{accountId}")

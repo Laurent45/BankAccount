@@ -1,0 +1,23 @@
+meta {
+  name: Update Overdraft Authorization
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{baseUrl}}/accounts/{{accountId}}/overdraft-authorization
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "limit": 200
+  }
+}
+
+docs {
+  Replaces the overdraft authorization of a bank account. A limit of 0 removes
+  the overdraft. 204 on success, 404 if the account is unknown, 422 if the
+  account is a savings account, 400 for a negative limit.
+}

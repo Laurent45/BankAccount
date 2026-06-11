@@ -5,12 +5,14 @@ import com.boarhat.application.port.in.CreateSavingsAccountUseCase;
 import com.boarhat.application.port.in.DepositUseCase;
 import com.boarhat.application.port.in.GetAccountUseCase;
 import com.boarhat.application.port.in.GetStatementUseCase;
+import com.boarhat.application.port.in.UpdateOverdraftAuthorizationUseCase;
 import com.boarhat.application.port.in.WithdrawUseCase;
 import com.boarhat.application.service.CreateBankAccountService;
 import com.boarhat.application.service.CreateSavingsAccountService;
 import com.boarhat.application.service.DepositService;
 import com.boarhat.application.service.GetAccountService;
 import com.boarhat.application.service.GetStatementService;
+import com.boarhat.application.service.UpdateOverdraftAuthorizationService;
 import com.boarhat.application.service.WithdrawService;
 import com.boarhat.domain.port.out.AccountRepository;
 import com.boarhat.domain.port.out.OperationRepository;
@@ -38,6 +40,11 @@ class UseCaseConfiguration {
     @Bean
     WithdrawUseCase withdrawUseCase(AccountRepository accountRepository) {
         return new WithdrawService(accountRepository);
+    }
+
+    @Bean
+    UpdateOverdraftAuthorizationUseCase updateOverdraftAuthorizationUseCase(AccountRepository accountRepository) {
+        return new UpdateOverdraftAuthorizationService(accountRepository);
     }
 
     @Bean
