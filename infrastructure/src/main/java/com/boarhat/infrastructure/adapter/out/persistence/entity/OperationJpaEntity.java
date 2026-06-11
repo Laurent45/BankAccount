@@ -1,4 +1,4 @@
-package com.boarhat.infrastructure.adapter.out.persistence;
+package com.boarhat.infrastructure.adapter.out.persistence.entity;
 
 import com.boarhat.domain.operation.OperationType;
 import jakarta.persistence.Column;
@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "operation")
-class OperationJpaEntity {
+public class OperationJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,4 +1,4 @@
-package com.boarhat.infrastructure.adapter.in.web;
+package com.boarhat.infrastructure.adapter.in.web.request;
 
 import java.math.BigDecimal;
 

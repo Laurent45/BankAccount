@@ -1,4 +1,4 @@
-package com.boarhat.infrastructure.adapter.in.web;
+package com.boarhat.infrastructure.adapter.in.web.response;
 
 import com.boarhat.domain.statement.Statement;
 
@@ -14,7 +14,7 @@ public record StatementResponse(
         BigDecimal balance,
         List<OperationResponse> operations
 ) {
-    static StatementResponse from(Statement statement) {
+    public static StatementResponse from(Statement statement) {
         return new StatementResponse(
                 statement.accountType().name(),
                 statement.accountId().value(),

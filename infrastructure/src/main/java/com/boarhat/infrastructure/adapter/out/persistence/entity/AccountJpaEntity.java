@@ -1,4 +1,4 @@
-package com.boarhat.infrastructure.adapter.out.persistence;
+package com.boarhat.infrastructure.adapter.out.persistence.entity;
 
 import com.boarhat.domain.account.AccountType;
 import jakarta.persistence.Column;
@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "account")
-class AccountJpaEntity {
+public class AccountJpaEntity {
 
     @Id
     private UUID id;

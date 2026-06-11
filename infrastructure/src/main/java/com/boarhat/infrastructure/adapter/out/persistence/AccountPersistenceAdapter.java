@@ -4,6 +4,10 @@ import com.boarhat.domain.account.Account;
 import com.boarhat.domain.account.AccountId;
 import com.boarhat.domain.operation.Operation;
 import com.boarhat.domain.port.out.AccountRepository;
+import com.boarhat.infrastructure.adapter.out.persistence.mapper.AccountMapper;
+import com.boarhat.infrastructure.adapter.out.persistence.mapper.OperationMapper;
+import com.boarhat.infrastructure.adapter.out.persistence.repository.AccountJpaRepository;
+import com.boarhat.infrastructure.adapter.out.persistence.repository.OperationJpaRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -3,6 +3,8 @@ package com.boarhat.infrastructure.adapter.out.persistence;
 import com.boarhat.domain.account.AccountId;
 import com.boarhat.domain.operation.Operation;
 import com.boarhat.domain.port.out.OperationRepository;
+import com.boarhat.infrastructure.adapter.out.persistence.mapper.OperationMapper;
+import com.boarhat.infrastructure.adapter.out.persistence.repository.OperationJpaRepository;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;

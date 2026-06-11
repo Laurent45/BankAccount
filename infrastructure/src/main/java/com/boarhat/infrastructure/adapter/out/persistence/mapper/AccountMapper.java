@@ -1,4 +1,4 @@
-package com.boarhat.infrastructure.adapter.out.persistence;
+package com.boarhat.infrastructure.adapter.out.persistence.mapper;
 
 import com.boarhat.domain.account.Account;
 import com.boarhat.domain.account.AccountId;
@@ -9,13 +9,14 @@ import com.boarhat.domain.account.OverdraftAuthorization;
 import com.boarhat.domain.account.SavingsAccount;
 import com.boarhat.domain.shared.Amount;
 import com.boarhat.domain.shared.Balance;
+import com.boarhat.infrastructure.adapter.out.persistence.entity.AccountJpaEntity;
 
-final class AccountMapper {
+public final class AccountMapper {
 
     private AccountMapper() {
     }
 
-    static AccountJpaEntity toEntity(Account account) {
+    public static AccountJpaEntity toEntity(Account account) {
         return switch (account) {
             case BankAccount bankAccount -> new AccountJpaEntity(
                     bankAccount.getAccountId().value(),
@@ -32,7 +33,7 @@ final class AccountMapper {
         };
     }
 
-    static Account toDomain(AccountJpaEntity entity) {
+    public static Account toDomain(AccountJpaEntity entity) {
         return switch (entity.getType()) {
             case BANK_ACCOUNT -> BankAccount.reconstruct(
                     AccountId.of(entity.getId()),

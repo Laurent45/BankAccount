@@ -1,4 +1,4 @@
-package com.boarhat.infrastructure.adapter.in.web;
+package com.boarhat.infrastructure.adapter.in.web.response;
 
 import com.boarhat.domain.account.Account;
 import com.boarhat.domain.account.BankAccount;
@@ -16,7 +16,7 @@ public record AccountResponse(
         BigDecimal overdraftLimit,
         BigDecimal depositCeiling
 ) {
-    static AccountResponse from(Account account) {
+    public static AccountResponse from(Account account) {
         return switch (account) {
             case BankAccount bankAccount -> new AccountResponse(
                     bankAccount.getAccountId().value(),
