@@ -228,4 +228,35 @@ class AccountControllerTest {
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.UNPROCESSABLE_CONTENT);
     }
+
+    @Test
+    void should_return_400_when_deposit_amount_is_missing() {
+        UUID accountId = createBankAccount();
+
+        restTestClient.post().uri("/accounts/{id}/deposits", accountId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new DepositRequest(null))
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void should_return_400_when_creating_savings_account_without_ceiling() {
+        restTestClient.post().uri("/accounts/savings")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new CreateSavingsAccountRequest(null))
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void should_accept_zero_overdraft_limit() {
+        UUID accountId = createBankAccount();
+
+        restTestClient.put().uri("/accounts/{id}/overdraft-authorization", accountId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new UpdateOverdraftAuthorizationRequest(BigDecimal.ZERO))
+                .exchange()
+                .expectStatus().isNoContent();
+    }
 }

@@ -22,6 +22,7 @@ import com.boarhat.infrastructure.adapter.in.web.request.WithdrawRequest;
 import com.boarhat.infrastructure.adapter.in.web.response.AccountCreatedResponse;
 import com.boarhat.infrastructure.adapter.in.web.response.AccountResponse;
 import com.boarhat.infrastructure.adapter.in.web.response.StatementResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -71,7 +72,7 @@ class AccountController {
     }
 
     @PostMapping("/savings")
-    public ResponseEntity<AccountCreatedResponse> createSavingsAccount(@RequestBody CreateSavingsAccountRequest request) {
+    public ResponseEntity<AccountCreatedResponse> createSavingsAccount(@Valid @RequestBody CreateSavingsAccountRequest request) {
         AccountId accountId = createSavingsAccountUseCase.createSavingsAccount(
                 new CreateSavingsAccountCommand(new DepositCeiling(Amount.of(request.depositCeiling()))));
         return created(accountId);
@@ -84,20 +85,20 @@ class AccountController {
 
     @PostMapping("/{accountId}/deposits")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deposit(@PathVariable("accountId") UUID accountId, @RequestBody DepositRequest request) {
+    public void deposit(@PathVariable("accountId") UUID accountId, @Valid @RequestBody DepositRequest request) {
         depositUseCase.deposit(new DepositCommand(AccountId.of(accountId), Amount.of(request.amount())));
     }
 
     @PostMapping("/{accountId}/withdrawals")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void withdraw(@PathVariable("accountId") UUID accountId, @RequestBody WithdrawRequest request) {
+    public void withdraw(@PathVariable("accountId") UUID accountId, @Valid @RequestBody WithdrawRequest request) {
         withdrawUseCase.withdraw(new WithdrawCommand(AccountId.of(accountId), Amount.of(request.amount())));
     }
 
     @PutMapping("/{accountId}/overdraft-authorization")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateOverdraftAuthorization(@PathVariable("accountId") UUID accountId,
-                                             @RequestBody UpdateOverdraftAuthorizationRequest request) {
+                                             @Valid @RequestBody UpdateOverdraftAuthorizationRequest request) {
         updateOverdraftAuthorizationUseCase.updateOverdraftAuthorization(new UpdateOverdraftAuthorizationCommand(
                 AccountId.of(accountId), new OverdraftAuthorization(Amount.of(request.limit()))));
     }
