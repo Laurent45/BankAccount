@@ -22,7 +22,7 @@ public record AccountResponse(
                     bankAccount.getAccountId().value(),
                     bankAccount.getAccountType().name(),
                     bankAccount.getBalance().value(),
-                    bankAccount.getOverdraftAuthorization().limit().value(),
+                    bankAccount.getOverdraftAuthorization().limit(),
                     null);
             case SavingsAccount savingsAccount -> new AccountResponse(
                     savingsAccount.getAccountId().value(),

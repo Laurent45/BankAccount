@@ -7,7 +7,7 @@ import com.boarhat.domain.shared.Balance;
 
 public class DepositCeilingReachedException extends RuntimeException {
     public DepositCeilingReachedException(AccountId accountId, Balance balance, Amount amount, DepositCeiling ceiling) {
-        super("Cannot deposit " + amount + " on account " + accountId
-                + ": balance " + balance + " would exceed ceiling " + ceiling.amount());
+        super("Cannot deposit " + amount.value() + " on account " + accountId.value()
+                + ": balance " + balance.value() + " would exceed ceiling " + ceiling.amount().value());
     }
 }

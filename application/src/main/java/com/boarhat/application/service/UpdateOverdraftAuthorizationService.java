@@ -25,7 +25,7 @@ public class UpdateOverdraftAuthorizationService implements UpdateOverdraftAutho
             throw new OverdraftNotSupportedException(command.accountId());
         }
 
-        bankAccount.allowOverdraft(command.overdraftAuthorization());
+        bankAccount.updateOverdraftAuthorization(command.overdraftAuthorization());
 
         accountRepository.save(bankAccount);
     }

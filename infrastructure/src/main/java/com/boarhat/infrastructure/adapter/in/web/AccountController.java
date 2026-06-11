@@ -100,7 +100,7 @@ class AccountController {
     public void updateOverdraftAuthorization(@PathVariable("accountId") UUID accountId,
                                              @Valid @RequestBody UpdateOverdraftAuthorizationRequest request) {
         updateOverdraftAuthorizationUseCase.updateOverdraftAuthorization(new UpdateOverdraftAuthorizationCommand(
-                AccountId.of(accountId), new OverdraftAuthorization(Amount.of(request.limit()))));
+                AccountId.of(accountId), new OverdraftAuthorization(request.limit())));
     }
 
     @GetMapping("/{accountId}")

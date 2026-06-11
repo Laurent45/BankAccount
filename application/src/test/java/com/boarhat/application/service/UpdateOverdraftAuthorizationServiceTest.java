@@ -46,7 +46,7 @@ class UpdateOverdraftAuthorizationServiceTest {
     @Test
     void should_remove_overdraft_when_not_allowed() {
         BankAccount account = BankAccount.create(ACCOUNT_ID);
-        account.allowOverdraft(OverdraftAuthorization.allowed(Amount.of(new BigDecimal("500"))));
+        account.updateOverdraftAuthorization(OverdraftAuthorization.allowed(Amount.of(new BigDecimal("500"))));
         accountRepository.save(account);
 
         updateOverdraftAuthorizationService.updateOverdraftAuthorization(

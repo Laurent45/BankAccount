@@ -21,8 +21,14 @@ class AmountTest {
         }
 
         @Test
-        void should_allow_zero_amount() {
-            assertThatCode(() -> Amount.of(BigDecimal.ZERO))
+        void should_throw_when_amount_is_zero() {
+            assertThatThrownBy(() -> Amount.of(BigDecimal.ZERO))
+                    .isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        void should_allow_strictly_positive_amount() {
+            assertThatCode(() -> Amount.of(new BigDecimal("0.01")))
                     .doesNotThrowAnyException();
         }
     }

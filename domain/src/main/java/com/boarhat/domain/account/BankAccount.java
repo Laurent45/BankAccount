@@ -4,6 +4,8 @@ import com.boarhat.domain.exception.InsufficientFundsException;
 import com.boarhat.domain.shared.Amount;
 import com.boarhat.domain.shared.Balance;
 
+import java.util.Objects;
+
 public final class BankAccount extends Account {
 
     private OverdraftAuthorization overdraftAuthorization;
@@ -18,15 +20,11 @@ public final class BankAccount extends Account {
 
     private BankAccount(AccountId accountId, Balance balance, OverdraftAuthorization overdraftAuthorization) {
         super(accountId, balance);
-        this.overdraftAuthorization = overdraftAuthorization;
+        this.overdraftAuthorization = Objects.requireNonNull(overdraftAuthorization, "OverdraftAuthorization must not be null");
     }
 
-    public void allowOverdraft(OverdraftAuthorization overdraftAuthorization) {
-        this.overdraftAuthorization = overdraftAuthorization;
-    }
-
-    public void denyOverdraft() {
-        this.overdraftAuthorization = OverdraftAuthorization.notAllowed();
+    public void updateOverdraftAuthorization(OverdraftAuthorization overdraftAuthorization) {
+        this.overdraftAuthorization = Objects.requireNonNull(overdraftAuthorization, "OverdraftAuthorization must not be null");
     }
 
     @Override
@@ -52,7 +50,7 @@ public final class BankAccount extends Account {
     }
 
     private boolean isWithdrawAllowed(Amount amount) {
-        Balance availableBalance = this.balance.add(overdraftAuthorization.limit());
+        Balance availableBalance = overdraftAuthorization.availableBalance(this.balance);
         return !availableBalance.subtract(amount).isNegative();
     }
 }

@@ -6,6 +6,7 @@ import com.boarhat.domain.shared.Balance;
 
 public class InsufficientFundsException extends RuntimeException {
     public InsufficientFundsException(AccountId accountId, Balance balance, Amount amount) {
-        super("Cannot withdraw " + amount + " from account " + accountId + " with balance " + balance);
+        super("Cannot withdraw " + amount.value() + " from account " + accountId.value()
+                + " with balance " + balance.value());
     }
 }

@@ -22,7 +22,7 @@ public final class AccountMapper {
                     bankAccount.getAccountId().value(),
                     AccountType.BANK_ACCOUNT,
                     bankAccount.getBalance().value(),
-                    bankAccount.getOverdraftAuthorization().limit().value(),
+                    bankAccount.getOverdraftAuthorization().limit(),
                     null);
             case SavingsAccount savingsAccount -> new AccountJpaEntity(
                     savingsAccount.getAccountId().value(),
@@ -38,7 +38,7 @@ public final class AccountMapper {
             case BANK_ACCOUNT -> BankAccount.reconstruct(
                     AccountId.of(entity.getId()),
                     Balance.of(entity.getBalance()),
-                    new OverdraftAuthorization(Amount.of(entity.getOverdraftLimit())));
+                    new OverdraftAuthorization(entity.getOverdraftLimit()));
             case SAVINGS_ACCOUNT -> SavingsAccount.reconstruct(
                     AccountId.of(entity.getId()),
                     Balance.of(entity.getBalance()),

@@ -14,8 +14,8 @@ public abstract sealed class Account permits BankAccount, SavingsAccount {
     protected Balance balance;
 
     protected Account(AccountId accountId, Balance balance) {
-        this.accountId = accountId;
-        this.balance = balance;
+        this.accountId = Objects.requireNonNull(accountId, "AccountId must not be null");
+        this.balance = Objects.requireNonNull(balance, "Balance must not be null");
     }
 
     public AccountId getAccountId() {

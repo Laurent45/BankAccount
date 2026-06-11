@@ -7,8 +7,8 @@ public record Amount(BigDecimal value) {
 
     public Amount {
         Objects.requireNonNull(value, "Amount value must not be null");
-        if (value.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Amount cannot be negative");
+        if (value.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Amount must be strictly positive");
         }
     }
 

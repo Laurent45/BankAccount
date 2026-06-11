@@ -5,6 +5,8 @@ import com.boarhat.domain.exception.InsufficientFundsException;
 import com.boarhat.domain.shared.Amount;
 import com.boarhat.domain.shared.Balance;
 
+import java.util.Objects;
+
 public final class SavingsAccount extends Account {
 
     private final DepositCeiling depositCeiling;
@@ -19,7 +21,7 @@ public final class SavingsAccount extends Account {
 
     private SavingsAccount(AccountId accountId, Balance balance, DepositCeiling depositCeiling) {
         super(accountId, balance);
-        this.depositCeiling = depositCeiling;
+        this.depositCeiling = Objects.requireNonNull(depositCeiling, "DepositCeiling must not be null");
     }
 
     @Override
@@ -29,10 +31,11 @@ public final class SavingsAccount extends Account {
 
     @Override
     protected void doDeposit(Amount amount) {
-        if (isDepositCeilingReached(amount)) {
+        Balance newBalance = this.balance.add(amount);
+        if (depositCeiling.isExceededBy(newBalance)) {
             throw new DepositCeilingReachedException(accountId, balance, amount, depositCeiling);
         }
-        this.balance = this.balance.add(amount);
+        this.balance = newBalance;
     }
 
     @Override
@@ -46,10 +49,5 @@ public final class SavingsAccount extends Account {
 
     public DepositCeiling getDepositCeiling() {
         return depositCeiling;
-    }
-
-    private boolean isDepositCeilingReached(Amount amount) {
-        Balance maxBalance = Balance.of(depositCeiling.amount());
-        return this.balance.add(amount).isGreaterThan(maxBalance);
     }
 }
