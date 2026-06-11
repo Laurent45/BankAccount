@@ -38,7 +38,7 @@ import java.net.URI;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/accounts")
+@RequestMapping(path = "/api/accounts", version = "1")
 class AccountController {
 
     private final CreateBankAccountUseCase createBankAccountUseCase;
@@ -79,7 +79,7 @@ class AccountController {
     }
 
     private static ResponseEntity<AccountCreatedResponse> created(AccountId accountId) {
-        URI location = URI.create("/accounts/" + accountId.value());
+        URI location = URI.create("/api/accounts/" + accountId.value());
         return ResponseEntity.created(location).body(new AccountCreatedResponse(accountId.value()));
     }
 

@@ -31,7 +31,7 @@ class AccountControllerTest {
     private RestTestClient restTestClient;
 
     private UUID createBankAccount() {
-        AccountCreatedResponse response = restTestClient.post().uri("/accounts/bank")
+        AccountCreatedResponse response = restTestClient.post().uri("/api/accounts/bank")
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody(AccountCreatedResponse.class)
@@ -46,7 +46,7 @@ class AccountControllerTest {
 
     @Test
     void should_create_savings_account() {
-        AccountCreatedResponse response = restTestClient.post().uri("/accounts/savings")
+        AccountCreatedResponse response = restTestClient.post().uri("/api/accounts/savings")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new CreateSavingsAccountRequest(new BigDecimal("1000")))
                 .exchange()
@@ -61,13 +61,13 @@ class AccountControllerTest {
     void should_deposit_then_show_operation_on_statement() {
         UUID accountId = createBankAccount();
 
-        restTestClient.post().uri("/accounts/{accountId}/deposits", accountId)
+        restTestClient.post().uri("/api/accounts/{accountId}/deposits", accountId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new DepositRequest(new BigDecimal("150.50")))
                 .exchange()
                 .expectStatus().isNoContent();
 
-        StatementResponse statement = restTestClient.get().uri("/accounts/{accountId}/statement", accountId)
+        StatementResponse statement = restTestClient.get().uri("/api/accounts/{accountId}/statement", accountId)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(StatementResponse.class)
@@ -83,19 +83,19 @@ class AccountControllerTest {
     @Test
     void should_withdraw_after_deposit() {
         UUID accountId = createBankAccount();
-        restTestClient.post().uri("/accounts/{id}/deposits", accountId)
+        restTestClient.post().uri("/api/accounts/{id}/deposits", accountId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new DepositRequest(new BigDecimal("100")))
                 .exchange()
                 .expectStatus().isNoContent();
 
-        restTestClient.post().uri("/accounts/{id}/withdrawals", accountId)
+        restTestClient.post().uri("/api/accounts/{id}/withdrawals", accountId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new WithdrawRequest(new BigDecimal("40")))
                 .exchange()
                 .expectStatus().isNoContent();
 
-        StatementResponse statement = restTestClient.get().uri("/accounts/{id}/statement", accountId)
+        StatementResponse statement = restTestClient.get().uri("/api/accounts/{id}/statement", accountId)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(StatementResponse.class)
@@ -106,7 +106,7 @@ class AccountControllerTest {
 
     @Test
     void should_return_404_when_account_does_not_exist() {
-        restTestClient.get().uri("/accounts/{id}/statement", UUID.randomUUID())
+        restTestClient.get().uri("/api/accounts/{id}/statement", UUID.randomUUID())
                 .exchange()
                 .expectStatus().isNotFound();
     }
@@ -115,7 +115,7 @@ class AccountControllerTest {
     void should_return_422_when_withdrawing_more_than_balance() {
         UUID accountId = createBankAccount();
 
-        restTestClient.post().uri("/accounts/{id}/withdrawals", accountId)
+        restTestClient.post().uri("/api/accounts/{id}/withdrawals", accountId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new WithdrawRequest(new BigDecimal("50")))
                 .exchange()
@@ -126,7 +126,7 @@ class AccountControllerTest {
     void should_return_400_when_depositing_negative_amount() {
         UUID accountId = createBankAccount();
 
-        restTestClient.post().uri("/accounts/{id}/deposits", accountId)
+        restTestClient.post().uri("/api/accounts/{id}/deposits", accountId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new DepositRequest(new BigDecimal("-10")))
                 .exchange()
@@ -137,7 +137,7 @@ class AccountControllerTest {
     void should_get_bank_account() {
         UUID accountId = createBankAccount();
 
-        AccountResponse response = restTestClient.get().uri("/accounts/{id}", accountId)
+        AccountResponse response = restTestClient.get().uri("/api/accounts/{id}", accountId)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(AccountResponse.class)
@@ -152,7 +152,7 @@ class AccountControllerTest {
 
     @Test
     void should_get_savings_account() {
-        UUID accountId = restTestClient.post().uri("/accounts/savings")
+        UUID accountId = restTestClient.post().uri("/api/accounts/savings")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new CreateSavingsAccountRequest(new BigDecimal("1000")))
                 .exchange()
@@ -160,7 +160,7 @@ class AccountControllerTest {
                 .expectBody(AccountCreatedResponse.class)
                 .returnResult().getResponseBody().accountId();
 
-        AccountResponse response = restTestClient.get().uri("/accounts/{id}", accountId)
+        AccountResponse response = restTestClient.get().uri("/api/accounts/{id}", accountId)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(AccountResponse.class)
@@ -173,7 +173,7 @@ class AccountControllerTest {
 
     @Test
     void should_return_404_when_getting_unknown_account() {
-        restTestClient.get().uri("/accounts/{id}", UUID.randomUUID())
+        restTestClient.get().uri("/api/accounts/{id}", UUID.randomUUID())
                 .exchange()
                 .expectStatus().isNotFound();
     }
@@ -182,13 +182,13 @@ class AccountControllerTest {
     void should_update_overdraft_authorization_of_bank_account() {
         UUID accountId = createBankAccount();
 
-        restTestClient.put().uri("/accounts/{id}/overdraft-authorization", accountId)
+        restTestClient.put().uri("/api/accounts/{id}/overdraft-authorization", accountId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new UpdateOverdraftAuthorizationRequest(new BigDecimal("200")))
                 .exchange()
                 .expectStatus().isNoContent();
 
-        AccountResponse response = restTestClient.get().uri("/accounts/{id}", accountId)
+        AccountResponse response = restTestClient.get().uri("/api/accounts/{id}", accountId)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(AccountResponse.class)
@@ -199,13 +199,13 @@ class AccountControllerTest {
     @Test
     void should_allow_withdrawal_within_overdraft_after_authorization() {
         UUID accountId = createBankAccount();
-        restTestClient.put().uri("/accounts/{id}/overdraft-authorization", accountId)
+        restTestClient.put().uri("/api/accounts/{id}/overdraft-authorization", accountId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new UpdateOverdraftAuthorizationRequest(new BigDecimal("100")))
                 .exchange()
                 .expectStatus().isNoContent();
 
-        restTestClient.post().uri("/accounts/{id}/withdrawals", accountId)
+        restTestClient.post().uri("/api/accounts/{id}/withdrawals", accountId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new WithdrawRequest(new BigDecimal("80")))
                 .exchange()
@@ -214,7 +214,7 @@ class AccountControllerTest {
 
     @Test
     void should_return_422_when_setting_overdraft_on_savings_account() {
-        UUID accountId = restTestClient.post().uri("/accounts/savings")
+        UUID accountId = restTestClient.post().uri("/api/accounts/savings")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new CreateSavingsAccountRequest(new BigDecimal("1000")))
                 .exchange()
@@ -222,7 +222,7 @@ class AccountControllerTest {
                 .expectBody(AccountCreatedResponse.class)
                 .returnResult().getResponseBody().accountId();
 
-        restTestClient.put().uri("/accounts/{id}/overdraft-authorization", accountId)
+        restTestClient.put().uri("/api/accounts/{id}/overdraft-authorization", accountId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new UpdateOverdraftAuthorizationRequest(new BigDecimal("200")))
                 .exchange()
@@ -233,7 +233,7 @@ class AccountControllerTest {
     void should_return_400_when_deposit_amount_is_missing() {
         UUID accountId = createBankAccount();
 
-        restTestClient.post().uri("/accounts/{id}/deposits", accountId)
+        restTestClient.post().uri("/api/accounts/{id}/deposits", accountId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new DepositRequest(null))
                 .exchange()
@@ -242,7 +242,7 @@ class AccountControllerTest {
 
     @Test
     void should_return_400_when_creating_savings_account_without_ceiling() {
-        restTestClient.post().uri("/accounts/savings")
+        restTestClient.post().uri("/api/accounts/savings")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new CreateSavingsAccountRequest(null))
                 .exchange()
@@ -253,10 +253,28 @@ class AccountControllerTest {
     void should_accept_zero_overdraft_limit() {
         UUID accountId = createBankAccount();
 
-        restTestClient.put().uri("/accounts/{id}/overdraft-authorization", accountId)
+        restTestClient.put().uri("/api/accounts/{id}/overdraft-authorization", accountId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new UpdateOverdraftAuthorizationRequest(BigDecimal.ZERO))
                 .exchange()
                 .expectStatus().isNoContent();
+    }
+
+    @Test
+    void should_accept_request_with_explicit_api_version() {
+        UUID accountId = createBankAccount();
+
+        restTestClient.get().uri("/api/accounts/{id}", accountId)
+                .header("API-Version", "1")
+                .exchange()
+                .expectStatus().isOk();
+    }
+
+    @Test
+    void should_reject_unsupported_api_version() {
+        restTestClient.get().uri("/api/accounts/{id}", UUID.randomUUID())
+                .header("API-Version", "99")
+                .exchange()
+                .expectStatus().isBadRequest();
     }
 }

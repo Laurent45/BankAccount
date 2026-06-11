@@ -5,9 +5,13 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/accounts/bank
+  url: {{baseUrl}}/api/accounts/bank
   body: none
   auth: none
+}
+
+headers {
+  API-Version: 1
 }
 
 script:post-response {

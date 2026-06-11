@@ -5,9 +5,13 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/accounts/{{accountId}}
+  url: {{baseUrl}}/api/accounts/{{accountId}}
   body: none
   auth: none
+}
+
+headers {
+  API-Version: 1
 }
 
 docs {

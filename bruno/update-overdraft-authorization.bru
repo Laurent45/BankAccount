@@ -5,9 +5,13 @@ meta {
 }
 
 put {
-  url: {{baseUrl}}/accounts/{{accountId}}/overdraft-authorization
+  url: {{baseUrl}}/api/accounts/{{accountId}}/overdraft-authorization
   body: json
   auth: none
+}
+
+headers {
+  API-Version: 1
 }
 
 body:json {

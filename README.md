@@ -63,13 +63,15 @@ The schema is owned by `infrastructure/src/main/resources/database/schema.sql` (
 
 | Method | Path | Description |
 |---|---|---|
-| POST | `/accounts/bank` | Create a bank account |
-| POST | `/accounts/savings` | Create a savings account `{"depositCeiling": 1000}` |
-| GET | `/accounts/{id}` | Account information (type-specific fields) |
-| POST | `/accounts/{id}/deposits` | Deposit `{"amount": 150.50}` |
-| POST | `/accounts/{id}/withdrawals` | Withdraw `{"amount": 40}` |
-| PUT | `/accounts/{id}/overdraft-authorization` | Set overdraft limit `{"limit": 200}` (0 removes it) |
-| GET | `/accounts/{id}/statement` | Statement of the last rolling month |
+| POST | `/api/accounts/bank` | Create a bank account |
+| POST | `/api/accounts/savings` | Create a savings account `{"depositCeiling": 1000}` |
+| GET | `/api/accounts/{id}` | Account information (type-specific fields) |
+| POST | `/api/accounts/{id}/deposits` | Deposit `{"amount": 150.50}` |
+| POST | `/api/accounts/{id}/withdrawals` | Withdraw `{"amount": 40}` |
+| PUT | `/api/accounts/{id}/overdraft-authorization` | Set overdraft limit `{"limit": 200}` (0 removes it) |
+| GET | `/api/accounts/{id}/statement` | Statement of the last rolling month |
+
+The API is versioned through the `API-Version` request header (Spring Framework 7's native API versioning). The current version is `1`; requests without the header default to it, and unsupported versions are rejected with `400`.
 
 Errors follow RFC 9457 Problem Details: `404` unknown account, `422` business rule violation (insufficient funds, deposit ceiling, overdraft on savings), `400` invalid input.
 
