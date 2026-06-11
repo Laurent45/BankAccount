@@ -1,0 +1,23 @@
+meta {
+  name: Deposit
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/accounts/{{accountId}}/deposits
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "amount": 150.50
+  }
+}
+
+docs {
+  Deposits the amount on the account. 204 on success, 404 if the account is
+  unknown, 422 if a savings account would exceed its deposit ceiling,
+  400 for a negative amount.
+}

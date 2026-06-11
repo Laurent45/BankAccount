@@ -1,0 +1,16 @@
+meta {
+  name: Get Statement
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/accounts/{{accountId}}/statement
+  body: none
+  auth: none
+}
+
+docs {
+  Returns the account statement: current balance and the operations of the
+  last rolling month, most recent first.
+}

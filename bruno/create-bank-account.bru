@@ -1,0 +1,22 @@
+meta {
+  name: Create Bank Account
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/accounts/bank
+  body: none
+  auth: none
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("accountId", res.body.accountId);
+  }
+}
+
+docs {
+  Creates a bank account (no overdraft by default) and stores the returned
+  accountId in the environment for the follow-up requests.
+}

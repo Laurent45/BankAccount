@@ -1,0 +1,16 @@
+meta {
+  name: Get Account
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/accounts/{{accountId}}
+  body: none
+  auth: none
+}
+
+docs {
+  Returns the account information. accountType discriminates the payload:
+  BANK_ACCOUNT includes overdraftLimit, SAVINGS_ACCOUNT includes depositCeiling.
+}

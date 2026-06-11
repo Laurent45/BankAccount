@@ -1,0 +1,28 @@
+meta {
+  name: Create Savings Account
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/accounts/savings
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "depositCeiling": 1000
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("accountId", res.body.accountId);
+  }
+}
+
+docs {
+  Creates a savings account with the given deposit ceiling and stores the
+  returned accountId in the environment for the follow-up requests.
+}

@@ -1,0 +1,23 @@
+meta {
+  name: Withdraw
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/accounts/{{accountId}}/withdrawals
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "amount": 40
+  }
+}
+
+docs {
+  Withdraws the amount from the account. 204 on success, 404 if the account is
+  unknown, 422 when funds (including any overdraft authorization) are
+  insufficient, 400 for a negative amount.
+}
