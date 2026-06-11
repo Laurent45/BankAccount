@@ -1,16 +1,16 @@
 package com.boarhat.infrastructure.adapter.in.web;
 
-import com.boarhat.application.command.CreateSavingsAccountCommand;
-import com.boarhat.application.command.DepositCommand;
-import com.boarhat.application.command.UpdateOverdraftAuthorizationCommand;
-import com.boarhat.application.command.WithdrawCommand;
-import com.boarhat.application.port.in.CreateBankAccountUseCase;
-import com.boarhat.application.port.in.CreateSavingsAccountUseCase;
-import com.boarhat.application.port.in.DepositUseCase;
-import com.boarhat.application.port.in.GetAccountUseCase;
-import com.boarhat.application.port.in.GetStatementUseCase;
-import com.boarhat.application.port.in.UpdateOverdraftAuthorizationUseCase;
-import com.boarhat.application.port.in.WithdrawUseCase;
+import com.boarhat.domain.port.in.account.CreateSavingsAccountCommand;
+import com.boarhat.domain.port.in.operation.DepositCommand;
+import com.boarhat.domain.port.in.account.UpdateOverdraftAuthorizationCommand;
+import com.boarhat.domain.port.in.operation.WithdrawCommand;
+import com.boarhat.domain.port.in.account.CreateBankAccountUseCase;
+import com.boarhat.domain.port.in.account.CreateSavingsAccountUseCase;
+import com.boarhat.domain.port.in.operation.DepositUseCase;
+import com.boarhat.domain.port.in.account.GetAccountUseCase;
+import com.boarhat.domain.port.in.statement.GetStatementUseCase;
+import com.boarhat.domain.port.in.account.UpdateOverdraftAuthorizationUseCase;
+import com.boarhat.domain.port.in.operation.WithdrawUseCase;
 import com.boarhat.domain.account.AccountId;
 import com.boarhat.domain.account.DepositCeiling;
 import com.boarhat.domain.account.OverdraftAuthorization;
@@ -78,11 +78,6 @@ class AccountController {
         return created(accountId);
     }
 
-    private static ResponseEntity<AccountCreatedResponse> created(AccountId accountId) {
-        URI location = URI.create("/api/accounts/" + accountId.value());
-        return ResponseEntity.created(location).body(new AccountCreatedResponse(accountId.value()));
-    }
-
     @PostMapping("/{accountId}/deposits")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deposit(@PathVariable("accountId") UUID accountId, @Valid @RequestBody DepositRequest request) {
@@ -111,5 +106,10 @@ class AccountController {
     @GetMapping("/{accountId}/statement")
     public StatementResponse getStatement(@PathVariable("accountId") UUID accountId) {
         return StatementResponse.from(getStatementUseCase.getStatement(AccountId.of(accountId)));
+    }
+
+    private static ResponseEntity<AccountCreatedResponse> created(AccountId accountId) {
+        URI location = URI.create("/api/accounts/" + accountId.value());
+        return ResponseEntity.created(location).body(new AccountCreatedResponse(accountId.value()));
     }
 }

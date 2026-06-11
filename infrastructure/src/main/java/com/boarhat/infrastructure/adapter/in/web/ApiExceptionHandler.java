@@ -1,7 +1,7 @@
 package com.boarhat.infrastructure.adapter.in.web;
 
-import com.boarhat.application.exception.AccountNotFoundException;
-import com.boarhat.application.exception.OverdraftNotSupportedException;
+import com.boarhat.domain.exception.AccountNotFoundException;
+import com.boarhat.domain.exception.OverdraftNotSupportedException;
 import com.boarhat.domain.exception.DepositCeilingReachedException;
 import com.boarhat.domain.exception.InsufficientFundsException;
 import org.springframework.http.HttpStatus;

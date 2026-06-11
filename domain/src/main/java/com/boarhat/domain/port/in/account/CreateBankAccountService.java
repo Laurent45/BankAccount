@@ -1,0 +1,26 @@
+package com.boarhat.domain.port.in.account;
+
+import com.boarhat.domain.account.AccountId;
+import com.boarhat.domain.account.BankAccount;
+import com.boarhat.domain.port.out.AccountRepository;
+
+import java.util.UUID;
+
+class CreateBankAccountService implements CreateBankAccountUseCase {
+    private final AccountRepository accountRepository;
+
+    CreateBankAccountService(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
+    }
+
+    @Override
+    public AccountId createBankAccount() {
+        AccountId accountId = new AccountId(UUID.randomUUID());
+
+        BankAccount bankAccount = BankAccount.create(accountId);
+
+        accountRepository.save(bankAccount);
+
+        return accountId;
+    }
+}
