@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.UUID;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -27,15 +28,19 @@ public record AccountResponse(
             case BankAccount bankAccount -> new AccountResponse(
                     bankAccount.getAccountId().value(),
                     bankAccount.getAccountType().name(),
-                    bankAccount.getBalance().value(),
-                    bankAccount.getOverdraftAuthorization().limit(),
+                    toMoney(bankAccount.getBalance().value()),
+                    toMoney(bankAccount.getOverdraftAuthorization().limit()),
                     null);
             case SavingsAccount savingsAccount -> new AccountResponse(
                     savingsAccount.getAccountId().value(),
                     savingsAccount.getAccountType().name(),
-                    savingsAccount.getBalance().value(),
+                    toMoney(savingsAccount.getBalance().value()),
                     null,
-                    savingsAccount.getDepositCeiling().amount().value());
+                    toMoney(savingsAccount.getDepositCeiling().amount().value()));
         };
+    }
+
+    private static BigDecimal toMoney(BigDecimal amount) {
+        return amount == null ? null : amount.setScale(2, RoundingMode.HALF_UP);
     }
 }
